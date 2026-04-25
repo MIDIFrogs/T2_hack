@@ -1,0 +1,358 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/**
+ * T2 Design System - Global Styles
+ */
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 0 0% 0%;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Inter', sans-serif;
+  font-feature-settings: "rlig" 1, "calt" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* T2 Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', Arial Black, sans-serif;
+  font-weight: 800;
+}
+
+h1 {
+  font-size: 48px;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-size: 32px;
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+}
+
+h3 {
+  font-size: 24px;
+  line-height: 0.95;
+}
+
+/* T2 Button Styles */
+.btn-primary {
+  background-color: #A7FC00;
+  color: #000000;
+  border-radius: 9999px;
+  padding: 16px 32px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  transition: all 0.2s;
+}
+
+.btn-primary:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background-color: #0000FF;
+  color: #FFFFFF;
+  border-radius: 9999px;
+  padding: 16px 32px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.btn-secondary:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-black {
+  background-color: #000000;
+  color: #FFFFFF;
+  border-radius: 9999px;
+  padding: 16px 32px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  transition: all 0.2s;
+}
+
+.btn-black:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.btn-black:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.btn-black:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--foreground);
+  border-radius: 9999px;
+  padding: 16px;
+  transition: background-color 0.2s;
+}
+
+.btn-ghost:hover {
+  background-color: #f3f4f6;
+}
+
+/* T2 Bento Card */
+.bento-card {
+  background: #FFFFFF;
+  border-radius: 32px;
+  border: 1px solid #000000;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+}
+
+.bento-card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.bento-card-dark {
+  background: #000000;
+  border-radius: 32px;
+  border: 1px solid #FFFFFF;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+}
+
+.bento-card-dark:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+}
+
+/* T2 Calendar Day */
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  font-size: 24px;
+  user-select: none;
+}
+
+.calendar-day:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-day-work {
+  background: #A7FC00;
+  color: #000000;
+}
+
+.calendar-day-off {
+  background: #000000;
+  color: #FFFFFF;
+}
+
+.calendar-day-vacation {
+  background: #FF3495;
+  color: #FFFFFF;
+}
+
+.calendar-day-sick {
+  background: #00BFFFF;
+  color: #FFFFFF;
+}
+
+.calendar-day-split {
+  background: #0000FF;
+  color: #FFFFFF;
+}
+
+.calendar-day-empty {
+  background: #FFFFFF;
+  color: #000000;
+  border: 2px solid #e5e7eb;
+}
+
+.calendar-day-other-month {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.calendar-day-today {
+  box-shadow: 0 0 0 4px #FF3495;
+}
+
+/* T2 Status Badge */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  border-radius: 9999px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.status-badge-work {
+  background: #A7FC00;
+  color: #000000;
+}
+
+.status-badge-off {
+  background: #000000;
+  color: #FFFFFF;
+}
+
+.status-badge-vacation {
+  background: #FF3495;
+  color: #FFFFFF;
+}
+
+.status-badge-sick {
+  background: #00BFFFF;
+  color: #FFFFFF;
+}
+
+.status-badge-split {
+  background: #0000FF;
+  color: #FFFFFF;
+}
+
+/* T2 Progress Bar */
+.progress-bar {
+  width: 100%;
+  height: 16px;
+  background: #e5e7eb;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  transition: width 0.5s ease-out;
+}
+
+.progress-bar-fill-work {
+  background: #A7FC00;
+}
+
+.progress-bar-fill-off {
+  background: #000000;
+}
+
+.progress-bar-fill-warning {
+  background: #FF3495;
+}
+
+/* T2 Input */
+.input-t2 {
+  width: 100%;
+  padding: 16px;
+  border: 2px solid #000000;
+  border-radius: 12px;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.input-t2:focus {
+  box-shadow: 0 0 0 2px #FF3495;
+}
+
+/* T2 Select */
+.select-t2 {
+  width: 100%;
+  padding: 16px;
+  border: 2px solid #000000;
+  border-radius: 12px;
+  outline: none;
+  background: #FFFFFF;
+  transition: all 0.2s;
+  appearance: none;
+  cursor: pointer;
+}
+
+.select-t2:focus {
+  box-shadow: 0 0 0 2px #FF3495;
+}
+
+/* T2 Text Gradient */
+.text-gradient {
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  background-image: linear-gradient(to right, var(--tw-gradient-stops));
+}
+
+.text-gradient-magenta {
+  background-image: linear-gradient(to right, #FF3495, #00BFFFF);
+}
+
+/* T2 Animation Classes */
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Custom scrollbar */
+.scrollbar-t2 {
+  scrollbar-width: thin;
+  scrollbar-color: #000000 #e5e7eb;
+}
+
+.scrollbar-t2::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollbar-t2::-webkit-scrollbar-track {
+  background: #e5e7eb;
+  border-radius: 4px;
+}
+
+.scrollbar-t2::-webkit-scrollbar-thumb {
+  background: #000000;
+  border-radius: 4px;
+}
+
+.scrollbar-t2::-webkit-scrollbar-thumb:hover {
+  background: #1f2937;
+}

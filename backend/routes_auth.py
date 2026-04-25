@@ -9,7 +9,7 @@ from auth import create_access_token, get_password_hash, verify_password, get_cu
 from config import settings
 from db import get_db
 from models import User, VerificationToken, UserRole
-from schemas import Token, UserCreate, UserMe, VerificationRequest
+from schemas import Token, UserCreate, UserMe, VerificationRequest, LoginRequest
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -57,13 +57,14 @@ def register_user(payload: UserCreate, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=Token)
 def login(
-    form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
+    payload: LoginRequest,
+    db: Session = Depends(get_db)
 ):
-    user = db.query(User).filter(User.email == form_data.username).first()
+    user = db.query(User).filter(User.email == payload.email).first()
     if not user or not user.password_hash:
         raise HTTPException(status_code=400, detail="Некорректный Email или пароль")
 
-    if not verify_password(form_data.password, user.password_hash):
+    if not verify_password(payload.password, user.password_hash):
         raise HTTPException(status_code=400, detail="Некорректный Email или пароль")
 
     access_token = create_access_token(
