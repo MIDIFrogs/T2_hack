@@ -54,7 +54,20 @@ class ApiClient {
 
       if (!response.ok) {
         const error = await response.json().catch(() => ({ detail: "Unknown error" }));
-        throw new Error(error.detail || error.message || "API Error");
+
+        // Handle different error formats
+        if (typeof error.detail === 'string') {
+          throw new Error(error.detail);
+        } else if (Array.isArray(error.detail)) {
+          // Pydantic validation errors
+          const messages = error.detail.map((e: any) => e.msg).join(', ');
+          throw new Error(messages);
+        } else if (typeof error.detail === 'object') {
+          // Nested error object
+          throw new Error(JSON.stringify(error.detail));
+        } else {
+          throw new Error(error.message || "API Error");
+        }
       }
 
       return await response.json();
@@ -96,10 +109,21 @@ class ApiClient {
     return this.request<Record<string, ScheduleDayPayload>>("/schedules/me");
   }
 
+  async getMyLimits(): Promise<{
+    available_vacation_days: number;
+    available_off_days: number;
+    used_vacation_days: number;
+    used_off_days: number;
+    remaining_vacation_days: number;
+    remaining_off_days: number;
+  }> {
+    return this.request("/schedules/me/limits");
+  }
+
   async updateMySchedule(
     schedule: Record<string, ScheduleDayPayload>
-  ): Promise<Record<string, ScheduleDayPayload>> {
-    return this.request<Record<string, ScheduleDayPayload>>("/schedules/me", {
+  ): Promise<{ schedule: Record<string, ScheduleDayPayload>; warnings: string[] }> {
+    return this.request("/schedules/me", {
       method: "PUT",
       body: JSON.stringify({ days: schedule }),
     });

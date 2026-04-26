@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Trophy, Target, TrendingUp, Award } from "lucide-react";
+import { ArrowLeft, Trophy, Target, TrendingUp, Award, Clock, Code, Coffee, Zap, Heart, Star, Flame } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
@@ -11,7 +11,7 @@ import { Header } from "@/components/layout/Header";
 import { useAuthStore } from "@/lib/store";
 import { api } from "@/lib/api";
 import { calculateTotalHours, formatHours } from "@/lib/utils";
-import { ScheduleDayPayload, DayStatus } from "@/types";
+import { ScheduleDayPayload, DayStatus, UserRole } from "@/types";
 
 interface Stats {
   totalHours: number;
@@ -48,13 +48,16 @@ export default function ProfilePage() {
       const splitDays = entries.filter((e) => e.status === DayStatus.SPLIT).length;
       const emptyDays = entries.filter((e) => !e.status || e.status === "").length;
 
+      // Незаполненные дни считаем как выходные для статистики
+      const totalOffDays = offDays + emptyDays;
+
       const totalDays = workDays + offDays + vacationDays + sickDays + splitDays;
       const completion = totalDays > 0 ? Math.round((totalDays / (totalDays + emptyDays)) * 100) : 0;
 
       setStats({
         totalHours,
         workDays,
-        offDays,
+        offDays: totalOffDays, // Включаем незаполненные дни
         vacationDays,
         sickDays,
         splitDays,
@@ -69,10 +72,16 @@ export default function ProfilePage() {
   };
 
   const achievements = [
-    { id: 1, title: "Ранний пташка", description: "Заполнил в первый день", icon: "🌟", unlocked: true },
-    { id: 2, title: "Перфекционист", description: "100% заполнено", icon: "🎯", unlocked: stats?.completion === 100 },
-    { id: 3, title: "Трудоголик", description: "180+ часов", icon: "💪", unlocked: (stats?.totalHours || 0) >= 180 },
-    { id: 4, title: "Надёжный", description: "Заполнился за неделю", icon: "⭐", unlocked: true },
+    { id: 1, title: "Hello, World!", description: "Первые часы в системе — начало пути", icon: Code, unlocked: (stats?.totalHours || 0) > 0 },
+    { id: 2, title: "Clean Code", description: "Идеальный порядок: 100% график заполнен", icon: Trophy, unlocked: stats?.completion === 100 },
+    { id: 3, title: "Coffee Driven Dev", description: "Кофеин и код: 180+ часов за месяц", icon: Coffee, unlocked: (stats?.totalHours || 0) >= 180 },
+    { id: 4, title: "Senior Developer", description: "Тысяча часов на часах — мастерство", icon: Award, unlocked: (stats?.totalHours || 0) >= 1000 },
+    { id: 5, title: "Git Commit", description: "Первая неделя сохранена в истории", icon: Star, unlocked: (stats?.workDays || 0) >= 5 },
+    { id: 6, title: "Форрест Гамп", description: "Бегун: 50+ рабочих дней позади", icon: Zap, unlocked: (stats?.workDays || 0) >= 50 },
+    { id: 7, title: "Work-Life Balance", description: "Гармония: и работа, и отдых", icon: Heart, unlocked: (stats?.workDays || 0) > 0 && (stats?.offDays || 0) > 0 },
+    { id: 8, title: "Евгений Онегин", description: "Свободный художник: 30+ отгулов", icon: TrendingUp, unlocked: (stats?.offDays || 0) >= 30 },
+    { id: 9, title: "Мастер и Маргарита", description: "Магия: 200 часов отработано", icon: Flame, unlocked: (stats?.totalHours || 0) >= 200 },
+    { id: 10, title: "100% Completion", description: "Платиновый трофей: все достижения", icon: Target, unlocked: false },
   ];
 
   if (isLoading) {
@@ -81,8 +90,8 @@ export default function ProfilePage() {
         <Header />
         <div className="container mx-auto px-4 py-8 flex items-center justify-center">
           <div className="text-center">
-            <div className="w-16 h-16 bg-black rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <span className="font-stencil text-3xl text-white">T2</span>
+            <div className="w-16 h-16 flex items-center justify-center mx-auto mb-4">
+              <img src="/logo/t2_Logo_Black_sRGB.svg" alt="T2 Logo" className="w-full h-full" />
             </div>
             <p className="font-body text-gray-600">Загрузка профиля...</p>
           </div>
@@ -114,31 +123,31 @@ export default function ProfilePage() {
 
           {/* Profile Header */}
           <motion.div
-            className="bento-card p-8"
+            className="bento-card p-4 sm:p-6 lg:p-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <div className="flex flex-col sm:flex-row items-center gap-6">
+            <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
               {/* Avatar */}
-              <div className="w-24 h-24 bg-t2-magenta rounded-full flex items-center justify-center">
-                <span className="font-stencil text-4xl text-white">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-t2-magenta rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="font-stencil text-2xl sm:text-3xl lg:text-4xl text-white">
                   {user?.full_name?.[0] || user?.email?.[0] || "U"}
                 </span>
               </div>
 
               {/* Info */}
               <div className="flex-1 text-center sm:text-left">
-                <h1 className="text-h1 font-display mb-2">{user?.full_name || "Пользователь"}</h1>
-                <p className="font-body text-gray-600 mb-1">{user?.email}</p>
-                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 text-sm text-gray-500">
+                <h1 className="text-h1 font-display mb-1 sm:mb-2 text-xl sm:text-2xl lg:text-4xl">{user?.full_name || "Пользователь"}</h1>
+                <p className="font-body text-gray-600 mb-1 text-sm sm:text-base">{user?.email}</p>
+                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3 text-xs sm:text-sm text-gray-500">
                   {user?.alliance && (
-                    <span className="px-3 py-1 bg-gray-100 rounded-full">{user.alliance}</span>
+                    <span className="px-2 sm:px-3 py-1 bg-gray-100 rounded-full">{user.alliance}</span>
                   )}
                   {user?.category && (
-                    <span className="px-3 py-1 bg-gray-100 rounded-full">{user.category}</span>
+                    <span className="px-2 sm:px-3 py-1 bg-gray-100 rounded-full">{user.category}</span>
                   )}
-                  <span className="px-3 py-1 bg-t2-salad text-black rounded-full font-medium">
+                  <span className="px-2 sm:px-3 py-1 bg-t2-salad text-black rounded-full font-medium">
                     {user?.role === UserRole.USER ? "Сотрудник" : user?.role === UserRole.MANAGER ? "Руководитель" : "Админ"}
                   </span>
                 </div>
@@ -149,7 +158,7 @@ export default function ProfilePage() {
           {/* Main Stats */}
           {stats && (
             <motion.div
-              className="grid grid-cols-2 md:grid-cols-4 gap-4"
+              className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
@@ -169,7 +178,7 @@ export default function ProfilePage() {
                 delay={0.1}
               />
               <StatCard
-                label="Выходных"
+                label="Отгулов"
                 value={stats.offDays.toString()}
                 icon={TrendingUp}
                 color="bg-white"
@@ -188,14 +197,14 @@ export default function ProfilePage() {
           {/* Distribution Chart */}
           {stats && (
             <motion.div
-              className="bento-card p-6"
+              className="bento-card p-3 sm:p-4 lg:p-6"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
-              <h3 className="text-h3 font-display mb-6">Распределение по дням</h3>
+              <h3 className="text-h3 font-display mb-3 sm:mb-4 lg:mb-6 text-base sm:text-lg lg:text-2xl">Распределение по дням</h3>
 
-              <div className="space-y-4">
+              <div className="space-y-2 sm:space-y-3 lg:space-y-4">
                 <DistributionBar
                   label="Рабочие дни"
                   count={stats.workDays}
@@ -204,7 +213,7 @@ export default function ProfilePage() {
                   delay={0}
                 />
                 <DistributionBar
-                  label="Выходные"
+                  label="Отгулы"
                   count={stats.offDays}
                   total={stats.workDays + stats.offDays + stats.vacationDays + stats.sickDays}
                   color="bg-status-off"
@@ -230,41 +239,36 @@ export default function ProfilePage() {
 
           {/* Achievements */}
           <motion.div
-            className="bento-card p-6"
+            className="bento-card p-3 sm:p-4 lg:p-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
           >
-            <h3 className="text-h3 font-display mb-6 flex items-center gap-2">
-              <Trophy className="w-6 h-6 text-t2-magenta" />
-              Достижения
+            <h3 className="text-h3 font-display mb-3 sm:mb-4 lg:mb-6 flex items-center gap-2 text-base sm:text-lg lg:text-2xl">
+              <Trophy className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-t2-magenta" />
+              <span>Достижения</span>
             </h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 lg:gap-4">
               {achievements.map((achievement, index) => (
                 <motion.div
                   key={achievement.id}
-                  className={`p-4 rounded-xl border-2 transition-all ${
+                  className={`p-2 sm:p-3 lg:p-4 rounded-xl border-2 transition-all ${
                     achievement.unlocked
-                      ? "bg-white border-black"
+                      ? "bg-[#A7FC00] border-black"
                       : "bg-gray-100 border-gray-300 opacity-60"
                   }`}
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.5 + index * 0.1 }}
+                  transition={{ delay: 0.5 + index * 0.05 }}
                   whileHover={achievement.unlocked ? { scale: 1.02 } : {}}
                 >
-                  <div className="flex items-start gap-3">
-                    <span className="text-3xl">{achievement.icon}</span>
-                    <div className="flex-1">
-                      <h4 className="font-display font-medium mb-1">{achievement.title}</h4>
-                      <p className="font-body text-sm text-gray-600">{achievement.description}</p>
+                  <div className="flex flex-col items-center text-center gap-2 sm:gap-3">
+                    <achievement.icon className={`w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 ${achievement.unlocked ? "text-t2-magenta" : "text-gray-400"}`} />
+                    <div>
+                      <h4 className={`font-display font-medium mb-0.5 sm:mb-1 text-xs sm:text-sm lg:text-base ${achievement.unlocked ? "text-black" : "text-gray-600"}`}>{achievement.title}</h4>
+                      <p className={`font-body text-xs sm:text-sm ${achievement.unlocked ? "text-black/70" : "text-gray-500"}`}>{achievement.description}</p>
                     </div>
-                    {achievement.unlocked && (
-                      <div className="w-6 h-6 bg-t2-salad rounded-full flex items-center justify-center">
-                        <span className="text-black text-xs">✓</span>
-                      </div>
-                    )}
                   </div>
                 </motion.div>
               ))}
@@ -292,14 +296,14 @@ function StatCard({
 }) {
   return (
     <motion.div
-      className={`bento-card p-4 flex flex-col items-center gap-2 ${color}`}
+      className={`bento-card p-2 sm:p-3 lg:p-4 flex flex-col items-center gap-1 sm:gap-2 ${color}`}
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay }}
     >
-      <Icon className="w-6 h-6" />
-      <div className="font-stencil text-3xl">{value}</div>
-      <div className="text-xs font-body font-medium">{label}</div>
+      <Icon className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
+      <div className="font-stencil text-lg sm:text-xl lg:text-3xl">{value}</div>
+      <div className="text-xs sm:text-xs lg:text-sm font-body font-medium">{label}</div>
     </motion.div>
   );
 }
@@ -341,7 +345,3 @@ function DistributionBar({
     </motion.div>
   );
 }
-
-// Import UserRole
-import { UserRole } from "@/types";
-import { Clock } from "lucide-react";

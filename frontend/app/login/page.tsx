@@ -23,11 +23,14 @@ export default function LoginPage() {
 
     try {
       const tokenData = await api.login(email, password);
+
+      // Сохраняем токен СРАЗУ после получения
+      apiHelpers.saveToken(tokenData.access_token);
+
       const userData = await api.getCurrentUser();
 
       // Save to store
       setAuth(userData, tokenData.access_token);
-      apiHelpers.saveToken(tokenData.access_token);
 
       // Redirect to home
       router.push("/");
@@ -53,8 +56,8 @@ export default function LoginPage() {
           animate={{ scale: 1 }}
           transition={{ delay: 0.2, type: "spring" }}
         >
-          <div className="w-20 h-20 bg-black rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <span className="font-stencil text-4xl text-white">T2</span>
+          <div className="w-20 h-20 flex items-center justify-center mx-auto mb-4">
+            <img src="/logo/t2_Logo_Black_sRGB.svg" alt="T2 Logo" className="w-full h-full" />
           </div>
           <h1 className="text-h2 font-display">Schedule</h1>
           <p className="font-body text-gray-600">Планирование рабочего времени</p>

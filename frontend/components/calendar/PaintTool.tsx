@@ -1,31 +1,25 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Brush, Eraser, Undo, Trash2 } from "lucide-react";
-import { DayStatus, STATUS_LABELS, STATUS_COLORS, PaintMode } from "@/types";
-import { usePaintToolStore, useScheduleStore, useHistoryStore } from "@/lib/store";
+import { Brush, Settings, Trash2, Eraser } from "lucide-react";
+import { DayStatus, STATUS_LABELS, STATUS_COLORS } from "@/types";
+import { usePaintToolStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 export function PaintTool() {
-  const { selectedStatus, mode, setSelectedStatus, reset } = usePaintToolStore();
-  const { schedule } = useScheduleStore();
-  const { canUndo, undo } = useHistoryStore();
+  const { selectedStatus, setSelectedStatus, reset, setIsPaintSettingsOpen, presets, isDeleting, setIsDeleting } = usePaintToolStore();
 
   const handleStatusChange = (status: DayStatus) => {
-    setSelectedStatus(status);
-  };
-
-  const handleClear = () => {
-    // Clear all painted days
-    useScheduleStore.getState().clearSchedule();
-    reset();
-  };
-
-  const handleUndo = () => {
-    const previousState = undo(schedule);
-    if (previousState) {
-      useScheduleStore.getState().setSchedule(previousState);
+    // Если кликнули на уже выбранный статус - открываем настройки
+    if (selectedStatus === status) {
+      setIsPaintSettingsOpen(true);
+    } else {
+      setSelectedStatus(status);
     }
+  };
+
+  const toggleDeleteMode = () => {
+    setIsDeleting(!isDeleting);
   };
 
   const statuses: DayStatus[] = [
@@ -37,75 +31,71 @@ export function PaintTool() {
   ];
 
   return (
-    <motion.div
-      className="bg-black rounded-full px-6 py-3 flex items-center gap-4"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-    >
+    <div className="flex items-center gap-2 sm:gap-4">
       {/* Brush Icon */}
-      <div className="flex items-center gap-2 text-white">
-        <Brush className="w-5 h-5" />
-        <span className="font-body font-medium">Кисть</span>
+      <div className="flex items-center gap-1.5 sm:gap-2 text-white flex-shrink-0">
+        <Brush className={`w-4 h-4 sm:w-5 sm:h-5 ${!selectedStatus && !isDeleting ? "opacity-50" : ""}`} />
+        <span className="font-body font-medium text-sm sm:text-base">Кисть</span>
       </div>
 
       {/* Divider */}
-      <div className="w-px h-8 bg-white/20" />
+      <div className="w-px h-6 sm:h-8 bg-white/20 flex-shrink-0" />
 
       {/* Status Selector */}
-      <div className="flex items-center gap-2">
-        {statuses.map((status) => (
-          <motion.button
-            key={status}
-            className={cn(
-              "px-4 py-2 rounded-full font-body text-sm font-medium transition-all",
-              selectedStatus === status
-                ? "text-black ring-2 ring-white ring-offset-2 ring-offset-black"
-                : "text-white/70 hover:text-white"
-            )}
-            style={{
-              backgroundColor: selectedStatus === status ? STATUS_COLORS[status] : "transparent",
-            }}
-            onClick={() => handleStatusChange(status)}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            {STATUS_LABELS[status]}
-          </motion.button>
-        ))}
-      </div>
+      <div className="flex items-center gap-1 sm:gap-2">
+        {statuses.map((status) => {
+          const isSelected = selectedStatus === status;
+          const preset = presets[status];
+          const hasPreset = preset && (preset.start || preset.end || preset.note || preset.splitShift);
 
-      {/* Divider */}
-      <div className="w-px h-8 bg-white/20" />
+          // Определяем цвет текста в зависимости от фона
+          const needsWhiteText = isSelected && (
+            status === DayStatus.SPLIT ||  // Синий фон
+            status === DayStatus.SICK       // Красный фон
+          );
 
-      {/* Actions */}
-      <div className="flex items-center gap-2">
-        {/* Undo */}
+          return (
+            <motion.button
+              key={status}
+              className={cn(
+                "px-2 sm:px-3 py-1.5 sm:py-2 rounded-full font-body text-xs sm:text-sm font-medium transition-all relative flex items-center gap-0.5 sm:gap-1 flex-shrink-0",
+                // Невыбранная кнопка - белый текст на прозрачном
+                !isSelected && "text-white hover:bg-white/10",
+                // Выбранная кнопка
+                isSelected && needsWhiteText && "text-white",
+                isSelected && !needsWhiteText && "text-black"
+              )}
+              style={{
+                backgroundColor: isSelected ? STATUS_COLORS[status] : undefined,
+              }}
+              onClick={() => handleStatusChange(status)}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <span className="hidden xs:inline sm:inline">{STATUS_LABELS[status]}</span>
+              <span className="xs:hidden sm:hidden">{status === DayStatus.WORK ? "Раб" : status === DayStatus.OFF ? "Вых" : status === DayStatus.VACATION ? "Отп" : status === DayStatus.SICK ? "Бол" : "Дроб"}</span>
+              {isSelected && hasPreset && (
+                <Settings className="w-2.5 h-2.5 sm:w-3 sm:h-3 opacity-70 flex-shrink-0" />
+              )}
+            </motion.button>
+          );
+        })}
+
+        {/* Delete Mode Button */}
         <motion.button
           className={cn(
-            "p-2 rounded-full transition-all",
-            canUndo
-              ? "text-white hover:bg-white/10"
-              : "text-white/20 cursor-not-allowed"
+            "px-2 sm:px-3 py-1.5 sm:py-2 rounded-full font-body text-xs sm:text-sm font-medium transition-all relative flex items-center gap-0.5 sm:gap-1 flex-shrink-0",
+            isDeleting ? "bg-red-500 text-white" : "text-white hover:bg-white/10"
           )}
-          onClick={handleUndo}
-          disabled={!canUndo}
-          whileHover={canUndo ? { scale: 1.1 } : {}}
-          whileTap={canUndo ? { scale: 0.9 } : {}}
+          onClick={toggleDeleteMode}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          title="Режим удаления"
         >
-          <Undo className="w-5 h-5" />
-        </motion.button>
-
-        {/* Clear */}
-        <motion.button
-          className="p-2 rounded-full text-white hover:bg-white/10 transition-all"
-          onClick={handleClear}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <Trash2 className="w-5 h-5" />
+          <Eraser className="w-4 h-4 sm:w-4 sm:h-4" />
+          <span className="hidden xs:inline sm:inline">{isDeleting ? "Удаление" : ""}</span>
         </motion.button>
       </div>
-    </motion.div>
+    </div>
   );
 }

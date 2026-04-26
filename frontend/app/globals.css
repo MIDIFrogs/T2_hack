@@ -18,6 +18,7 @@ body {
   font-feature-settings: "rlig" 1, "calt" 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  zoom: 1.1;
 }
 
 /* T2 Typography */
@@ -159,13 +160,33 @@ h3 {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s;
   font-family: 'Inter', sans-serif;
   font-weight: 800;
-  font-size: 24px;
+  font-size: 14px;
   user-select: none;
+  position: relative;
+}
+
+@media (min-width: 640px) {
+  .calendar-day {
+    font-size: 16px;
+    border-radius: 12px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .calendar-day {
+    font-size: 20px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .calendar-day {
+    font-size: 24px;
+  }
 }
 
 .calendar-day:hover {
@@ -179,17 +200,17 @@ h3 {
 }
 
 .calendar-day-off {
-  background: #000000;
-  color: #FFFFFF;
+  background: #FFFF00;
+  color: #000000;
 }
 
 .calendar-day-vacation {
   background: #FF3495;
-  color: #FFFFFF;
+  color: #000000;
 }
 
 .calendar-day-sick {
-  background: #00BFFFF;
+  background: #FF4444;
   color: #FFFFFF;
 }
 
@@ -213,6 +234,78 @@ h3 {
   box-shadow: 0 0 0 4px #FF3495;
 }
 
+.calendar-day-past {
+  pointer-events: none;
+  position: relative;
+}
+
+.calendar-day-past::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.05) 2px,
+    rgba(0, 0, 0, 0.05) 4px
+  );
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* Легкая штриховка для режима планирования */
+.calendar-day-draft-mode {
+  position: relative;
+}
+
+.calendar-day-draft-mode::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 3px,
+    rgba(59, 130, 246, 0.03) 3px,
+    rgba(59, 130, 246, 0.03) 6px
+  );
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* Черновики (планирование на будущее) - те же цвета, что и обычные дни */
+.calendar-day-work-draft {
+  background: #A7FC00;
+  color: #000000;
+}
+
+.calendar-day-off-draft {
+  background: #FFFF00;
+  color: #000000;
+}
+
+.calendar-day-vacation-draft {
+  background: #FF3495;
+  color: #000000;
+}
+
+.calendar-day-sick-draft {
+  background: #FF4444;
+  color: #FFFFFF;
+}
+
+.calendar-day-split-draft {
+  background: #0000FF;
+  color: #FFFFFF;
+}
+
+.calendar-day-draft {
+  background: #FFFFFF;
+  color: #000000;
+  border: 2px solid #e5e7eb;
+}
+
 /* T2 Status Badge */
 .status-badge {
   display: inline-flex;
@@ -231,17 +324,17 @@ h3 {
 }
 
 .status-badge-off {
-  background: #000000;
-  color: #FFFFFF;
+  background: #FFFF00;
+  color: #000000;
 }
 
 .status-badge-vacation {
   background: #FF3495;
-  color: #FFFFFF;
+  color: #000000;
 }
 
 .status-badge-sick {
-  background: #00BFFFF;
+  background: #FF4444;
   color: #FFFFFF;
 }
 
@@ -269,11 +362,40 @@ h3 {
 }
 
 .progress-bar-fill-off {
-  background: #000000;
+  background: #FFFF00;
+}
+
+.progress-bar-fill-vacation {
+  background: #FF3495;
+}
+
+.progress-bar-fill-sick {
+  background: #FF4444;
 }
 
 .progress-bar-fill-warning {
+  background: #FF4444;
+}
+
+/* Status colors for distribution bars */
+.bg-status-work {
+  background: #A7FC00;
+}
+
+.bg-status-off {
+  background: #FFFF00;
+}
+
+.bg-status-vacation {
   background: #FF3495;
+}
+
+.bg-status-sick {
+  background: #FF4444;
+}
+
+.bg-status-split {
+  background: #0000FF;
 }
 
 /* T2 Input */
@@ -355,4 +477,81 @@ h3 {
 
 .scrollbar-t2::-webkit-scrollbar-thumb:hover {
   background: #1f2937;
+}
+
+/* Touch-friendly styles */
+@media (hover: none) and (pointer: coarse) {
+  /* Улучшаем touch targets для мобильных устройств */
+  button, .calendar-day {
+    min-height: 44px;
+  }
+
+  /* Увеличиваем touch targets */
+  .input-t2, .select-t2 {
+    min-height: 48px;
+  }
+}
+
+/* Mobile specific optimizations */
+@media (max-width: 640px) {
+  /* Увеличиваем clickable области */
+  .calendar-day {
+    min-height: 40px;
+    font-size: 16px; /* Предотвращает zoom на iOS */
+  }
+
+  /* Улучшаем отступы на мобильных */
+  .bento-card {
+    margin: 0.5rem 0;
+  }
+
+  /* Адаптивные шрифты */
+  h1 {
+    font-size: 28px;
+    line-height: 1.1;
+  }
+
+  h2 {
+    font-size: 24px;
+    line-height: 1.2;
+  }
+
+  h3 {
+    font-size: 20px;
+    line-height: 1.2;
+  }
+}
+
+/* Tablet optimizations */
+@media (min-width: 641px) and (max-width: 1024px) {
+  /* Баланс между desktop и mobile */
+  .container {
+    max-width: 95%;
+  }
+}
+
+/* Small mobile phones */
+@media (max-width: 380px) {
+  /* Дополнительная адаптация для маленьких экранов */
+  .calendar-day {
+    border-radius: 6px;
+    font-size: 14px;
+  }
+
+  .bento-card {
+    border-radius: 16px;
+  }
+}
+
+/* Landscape mobile optimizations */
+@media (max-width: 640px) and (orientation: landscape) {
+  /* Уменьшаем вертикальные отступы в landscape */
+  .calendar-day {
+    aspect-ratio: 1;
+  }
+
+  main {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
 }

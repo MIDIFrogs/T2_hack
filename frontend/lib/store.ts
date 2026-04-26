@@ -1,9 +1,11 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import type { DayStatus } from "@/types";
 import {
   DayStatus,
   PaintMode,
   PaintToolState,
+  PaintPreset,
   ScheduleDayPayload,
   User,
   CollectionPeriod,
@@ -58,6 +60,7 @@ interface ScheduleState {
   setCurrentPeriod: (period: CollectionPeriod | null) => void;
   updateDay: (date: string, payload: ScheduleDayPayload) => void;
   updateDays: (updates: Record<string, ScheduleDayPayload>) => void;
+  removeDay: (date: string) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   clearSchedule: () => void;
@@ -84,6 +87,12 @@ export const useScheduleStore = create<ScheduleState>((set) => ({
         ...updates,
       },
     })),
+  removeDay: (date) =>
+    set((state) => {
+      const newSchedule = { ...state.schedule };
+      delete newSchedule[date];
+      return { schedule: newSchedule };
+    }),
   setLoading: (loading) => set({ isLoading: loading }),
   setError: (error) => set({ error }),
   clearSchedule: () => set({ schedule: {} }),
@@ -93,30 +102,76 @@ export const useScheduleStore = create<ScheduleState>((set) => ({
  * Paint Tool Store
  */
 interface PaintToolStore extends PaintToolState {
-  setSelectedStatus: (status: DayStatus) => void;
+  presets: Record<DayStatus, PaintPreset>;
+  isPaintSettingsOpen: boolean;
+  isDeleting: boolean; // Режим удаления дней
+  setSelectedStatus: (status: DayStatus | null) => void;
   setMode: (mode: PaintMode) => void;
   setIsPainting: (painting: boolean) => void;
   setSelectedRange: (dates: Date[] | undefined) => void;
+  setIsPaintSettingsOpen: (open: boolean) => void;
+  setIsDeleting: (deleting: boolean) => void;
+  updatePreset: (status: DayStatus, preset: PaintPreset) => void;
+  getPreset: (status: DayStatus) => PaintPreset;
   reset: () => void;
 }
 
-export const usePaintToolStore = create<PaintToolStore>((set) => ({
-  selectedStatus: DayStatus.WORK,
-  mode: PaintMode.DRAG,
-  isPainting: false,
-  selectedRange: undefined,
-  setSelectedStatus: (status) => set({ selectedStatus: status }),
-  setMode: (mode) => set({ mode }),
-  setIsPainting: (painting) => set({ isPainting: painting }),
-  setSelectedRange: (dates) => set({ selectedRange: dates }),
-  reset: () =>
-    set({
-      selectedStatus: DayStatus.WORK,
+const defaultPresets: Record<DayStatus, PaintPreset> = {
+  [DayStatus.WORK]: { start: "09:00", end: "18:00" },
+  [DayStatus.OFF]: {},
+  [DayStatus.VACATION]: {},
+  [DayStatus.SICK]: {},
+  [DayStatus.SPLIT]: {
+    splitShift: true,
+    splitParts: [
+      { start: "09:00", end: "13:00" },
+      { start: "14:00", end: "18:00" },
+    ],
+  },
+};
+
+export const usePaintToolStore = create<PaintToolStore>()(
+  persist(
+    (set, get) => ({
+      selectedStatus: null,
       mode: PaintMode.DRAG,
       isPainting: false,
       selectedRange: undefined,
+      presets: defaultPresets,
+      isPaintSettingsOpen: false,
+      isDeleting: false,
+      setSelectedStatus: (status) => set({ selectedStatus: status, isDeleting: false }),
+      setMode: (mode) => set({ mode }),
+      setIsPainting: (painting) => set({ isPainting: painting }),
+      setSelectedRange: (dates) => set({ selectedRange: dates }),
+      setIsPaintSettingsOpen: (open) => set({ isPaintSettingsOpen: open }),
+      setIsDeleting: (deleting) => set({ isDeleting: deleting, selectedStatus: deleting ? null : false }),
+      updatePreset: (status, preset) =>
+        set((state) => ({
+          presets: {
+            ...state.presets,
+            [status]: preset,
+          },
+        })),
+      getPreset: (status) => {
+        const { presets } = get();
+        return presets[status] || {};
+      },
+      reset: () =>
+        set({
+          selectedStatus: null,
+          mode: PaintMode.DRAG,
+          isPainting: false,
+          selectedRange: undefined,
+          isPaintSettingsOpen: false,
+          isDeleting: false,
+        }),
     }),
-}));
+    {
+      name: "t2-paint-tool",
+    }
+  )
+);
 
 /**
  * Templates Store
@@ -155,9 +210,11 @@ export const useTemplatesStore = create<TemplatesState>((set) => ({
 interface UIState {
   selectedDate: Date | null;
   isDayModalOpen: boolean;
+  isQuickFillOpen: boolean;
   currentMonth: Date;
   setSelectedDate: (date: Date | null) => void;
   setIsDayModalOpen: (open: boolean) => void;
+  setIsQuickFillOpen: (open: boolean) => void;
   setCurrentMonth: (date: Date) => void;
   nextMonth: () => void;
   prevMonth: () => void;
@@ -166,9 +223,11 @@ interface UIState {
 export const useUIStore = create<UIState>((set) => ({
   selectedDate: null,
   isDayModalOpen: false,
+  isQuickFillOpen: false,
   currentMonth: new Date(),
   setSelectedDate: (date) => set({ selectedDate: date }),
   setIsDayModalOpen: (open) => set({ isDayModalOpen: open }),
+  setIsQuickFillOpen: (open) => set({ isQuickFillOpen: open }),
   setCurrentMonth: (date) => set({ currentMonth: date }),
   nextMonth: () =>
     set((state) => {

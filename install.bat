@@ -1,16 +1,42 @@
 @echo off
-echo 📦 Установка зависимостей T2 Schedule Backend...
+chcp 65001 >nul
+title T2 Schedule - Установка зависимостей
+
+echo.
+echo ╔══════════════════════════════════════════════════════╗
+echo ║      📦 T2 Schedule - Установка зависимостей          ║
+echo ╚══════════════════════════════════════════════════════╝
 echo.
 
+echo [1/2] Установка зависимостей бэкенда...
 cd /d "%~dp0backend"
-
-echo Установка Python пакетов...
-pip install fastapi uvicorn sqlalchemy pydantic python-multipart python-jose[cryptography] passlib[bcrypt] psycopg2-binary requests
-
 echo.
-echo ✅ Установка завершена!
-echo.
-echo 🚀 Теперь запусти: python start.py
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+if errorlevel 1 (
+    echo ❌ Ошибка при установке зависимостей бэкенда!
+    pause
+    exit /b 1
+)
+echo ✅ Зависимости бэкенда установлены
 echo.
 
+echo [2/2] Установка зависимостей фронтенда...
+cd /d "%~dp0frontend"
+echo.
+call npm install
+if errorlevel 1 (
+    echo ❌ Ошибка при установке зависимостей фронтенда!
+    pause
+    exit /b 1
+)
+echo ✅ Зависимости фронтенда установлены
+echo.
+
+echo ╔══════════════════════════════════════════════════════╗
+echo ║              ✅ Установка завершена!                  ║
+echo ╠══════════════════════════════════════════════════════╣
+echo ║  Теперь можете запустить проект: start.bat            ║
+echo ╚══════════════════════════════════════════════════════╝
+echo.
 pause

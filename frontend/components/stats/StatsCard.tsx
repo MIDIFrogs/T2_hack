@@ -1,23 +1,50 @@
 "use client";
 
+import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Clock, AlertCircle, CheckCircle, TrendingUp } from "lucide-react";
-import { calculateTotalHours, formatHours } from "@/lib/utils";
+import { Clock, AlertCircle, CheckCircle, TrendingUp, Minus, Plus } from "lucide-react";
+import { calculateTotalHours, formatHours, formatDateForAPI } from "@/lib/utils";
 import { ScheduleDayPayload, DayStatus } from "@/types";
 import { cn } from "@/lib/utils";
 
 interface StatsCardProps {
   schedule: Record<string, ScheduleDayPayload>;
+  currentMonth: Date;
   targetHours?: number;
 }
 
-export function StatsCard({ schedule, targetHours = 160 }: StatsCardProps) {
-  const totalHours = calculateTotalHours(schedule);
+export function StatsCard({ schedule, currentMonth, targetHours: initialTargetHours = 160 }: StatsCardProps) {
+  const [targetHours, setTargetHours] = useState(initialTargetHours);
+
+  // Фильтруем дни только за текущий месяц
+  const monthlySchedule = useMemo(() => {
+    const filtered: Record<string, ScheduleDayPayload> = {};
+    const year = currentMonth.getFullYear();
+    const month = currentMonth.getMonth();
+
+    Object.entries(schedule).forEach(([dateStr, payload]) => {
+      const date = new Date(dateStr);
+      if (date.getFullYear() === year && date.getMonth() === month) {
+        filtered[dateStr] = payload;
+      }
+    });
+
+    return filtered;
+  }, [schedule, currentMonth]);
+
+  const totalHours = calculateTotalHours(monthlySchedule);
   const remainingHours = Math.max(0, targetHours - totalHours);
-  const overworkHours = Math.max(0, totalHours - targetHours);
   const isOverwork = totalHours > targetHours;
   const isUnderwork = totalHours < targetHours && totalHours > 0;
   const isComplete = totalHours === targetHours;
+
+  const handleDecreaseTarget = () => {
+    setTargetHours((prev) => Math.max(0, prev - 8));
+  };
+
+  const handleIncreaseTarget = () => {
+    setTargetHours((prev) => prev + 8);
+  };
 
   const stats = [
     {
@@ -29,17 +56,33 @@ export function StatsCard({ schedule, targetHours = 160 }: StatsCardProps) {
     },
     {
       label: "Норма",
-      value: formatHours(targetHours),
+      value: (
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleDecreaseTarget}
+            className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+          >
+            <Minus className="w-4 h-4" />
+          </button>
+          <span className="font-stencil text-3xl">{formatHours(targetHours)}</span>
+          <button
+            onClick={handleIncreaseTarget}
+            className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+          </button>
+        </div>
+      ),
       icon: CheckCircle,
       color: "text-black",
       bgColor: "bg-white",
     },
     {
-      label: isOverwork ? "Переработка" : "Осталось",
-      value: formatHours(isOverwork ? overworkHours : remainingHours),
-      icon: isOverwork ? AlertCircle : TrendingUp,
+      label: "Остаток",
+      value: formatHours(remainingHours),
+      icon: TrendingUp,
       color: isOverwork ? "text-white" : "text-black",
-      bgColor: isOverwork ? "bg-t2-magenta" : "bg-white",
+      bgColor: isOverwork ? "bg-black" : "bg-white",
     },
   ];
 
@@ -53,22 +96,22 @@ export function StatsCard({ schedule, targetHours = 160 }: StatsCardProps) {
       transition={{ duration: 0.5 }}
     >
       {/* Stats Grid */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-2 sm:gap-3 lg:gap-4">
         {stats.map((stat, index) => {
           const Icon = stat.icon;
           return (
             <motion.div
               key={stat.label}
-              className={cn("bento-card p-4 flex flex-col items-center gap-2", stat.bgColor)}
+              className={cn("bento-card p-2 sm:p-3 lg:p-4 flex flex-col items-center gap-1", stat.bgColor)}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: index * 0.1 }}
             >
-              <Icon className={cn("w-6 h-6", stat.color)} />
-              <div className={cn("font-stencil text-3xl", stat.color)}>
+              <Icon className={cn("w-4 h-4 sm:w-5 sm:h-5", stat.color)} />
+              <div className={cn("font-stencil text-xl sm:text-2xl lg:text-3xl", stat.color)}>
                 {stat.value}
               </div>
-              <div className={cn("text-xs font-body font-medium", stat.color)}>
+              <div className={cn("text-xs sm:text-sm font-body font-medium", stat.color)}>
                 {stat.label}
               </div>
             </motion.div>
@@ -78,14 +121,14 @@ export function StatsCard({ schedule, targetHours = 160 }: StatsCardProps) {
 
       {/* Progress Bar */}
       <motion.div
-        className="bento-card p-4"
+        className="bento-card p-2 sm:p-3"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
       >
-        <div className="flex items-center justify-between mb-2">
-          <span className="font-body text-sm font-medium">Прогресс</span>
-          <span className="font-stencil text-lg">{Math.round(progress)}%</span>
+        <div className="flex items-center justify-between mb-1 sm:mb-2">
+          <span className="font-body text-xs sm:text-sm font-medium">Прогресс</span>
+          <span className="font-stencil text-sm sm:text-base lg:text-lg">{Math.round(progress)}%</span>
         </div>
         <div className="progress-bar">
           <motion.div
@@ -132,7 +175,7 @@ export function StatsCard({ schedule, targetHours = 160 }: StatsCardProps) {
             transition={{ delay: 0.5 }}
           >
             <AlertCircle className="w-4 h-4" />
-            Переработка {formatHours(overworkHours)}. Уберите лишние часы.
+            Переработка {formatHours(totalHours - targetHours)}. Уберите лишние часы.
           </motion.div>
         )}
       </motion.div>

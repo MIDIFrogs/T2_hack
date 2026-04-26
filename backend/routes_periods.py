@@ -5,9 +5,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
-from auth import require_role, get_current_active_user
+from auth import require_role, get_current_active_user, get_current_user_optional
 from db import get_db
-from models import CollectionPeriod, User, UserRole, ScheduleEntry
+from models import CollectionPeriod, User, UserRole, ScheduleEntry, ScheduleDraft
 from schemas import CollectionPeriodCreate, CollectionPeriodOut
 
 router = APIRouter(prefix="/periods", tags=["periods"])
@@ -15,11 +15,11 @@ router = APIRouter(prefix="/periods", tags=["periods"])
 
 @router.get("/current", response_model=Optional[CollectionPeriodOut])
 def get_current_period(
-    current_user: User = Depends(get_current_active_user),
+    current_user: Optional[User] = Depends(get_current_user_optional),
     db: Session = Depends(get_db)
 ):
-    # Если у пользователя нет альянса, возвращаем None
-    if not current_user.alliance:
+    # Если пользователь не авторизован или у него нет альянса, возвращаем None
+    if not current_user or not current_user.alliance:
         return None
 
     # Получаем период для альянса пользователя
@@ -65,6 +65,43 @@ def create_period(
     db.add(period)
     db.commit()
     db.refresh(period)
+
+    # === Авто-перенос черновиков ===
+    # Находим всех верифицированных пользователей альянса
+    alliance_users = db.query(User).filter(
+        User.alliance == current_user.alliance,
+        User.is_verified == True
+    ).all()
+
+    for user in alliance_users:
+        # Находим черновики пользователя, которые попадают в новый период
+        user_drafts = db.query(ScheduleDraft).filter(
+            ScheduleDraft.user_id == user.id,
+            ScheduleDraft.day >= payload.period_start,
+            ScheduleDraft.day <= payload.period_end
+        ).all()
+
+        # Переносим черновики в основной график
+        for draft in user_drafts:
+            entry = ScheduleEntry(
+                user_id=user.id,
+                period_id=period.id,
+                day=draft.day,
+                status=draft.status,
+                meta=draft.meta,
+            )
+            db.add(entry)
+
+        # Удаляем перенесенные черновики
+        if user_drafts:
+            db.query(ScheduleDraft).filter(
+                ScheduleDraft.user_id == user.id,
+                ScheduleDraft.day >= payload.period_start,
+                ScheduleDraft.day <= payload.period_end
+            ).delete()
+
+    db.commit()
+
     return period
 
 

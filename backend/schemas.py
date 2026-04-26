@@ -24,10 +24,12 @@ class TokenPayload(BaseModel):
 
 
 class UserBase(BaseModel):
-    external_id: Optional[str] = Field(None, description="External numeric/string identifier")
+    external_id: Optional[str] = Field(default=None, description="External numeric/string identifier")
     full_name: Optional[str] = None
     alliance: Optional[str] = None
     category: Optional[str] = None
+    available_vacation_days: Optional[int] = Field(default=14, description="Доступное количество отпускных дней")
+    available_off_days: Optional[int] = Field(default=5, description="Доступное количество отгулов")
     role: UserRole = UserRole.USER
 
 
@@ -63,11 +65,17 @@ class VerificationRequest(BaseModel):
 class ScheduleDayPayload(BaseModel):
     status: str
     meta: Optional[dict] = None
+    is_draft: Optional[bool] = False  # True если это черновик (вне периода)
 
 
 class ScheduleBulkUpdate(BaseModel):
     # Map of "YYYY-MM-DD" -> complex payload for a day
     days: Dict[date, ScheduleDayPayload]
+
+
+class ScheduleUpdateResponse(BaseModel):
+    schedule: Dict[date, ScheduleDayPayload]
+    warnings: list[str] = []
 
 
 class ScheduleForUser(BaseModel):

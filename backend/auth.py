@@ -13,6 +13,7 @@ from models import User, UserRole
 from schemas import TokenPayload
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+oauth2_optional = OAuth2PasswordBearer(tokenUrl="/auth/login", auto_error=False)
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -113,3 +114,27 @@ def require_role(required_role: UserRole):
             detail="Недостаточно прав доступа"
         )
     return role_dep
+
+
+def get_current_user_optional(
+    token: Optional[str] = Depends(oauth2_optional),
+    db: Session = Depends(get_db)
+) -> Optional[User]:
+    """Optional authentication - returns None if no token provided"""
+    if not token:
+        return None
+
+    try:
+        payload = jwt.decode(
+            token,
+            settings.JWT_SECRET_KEY,
+            algorithms=[settings.JWT_ALGORITHM]
+        )
+        token_data = TokenPayload(**payload)
+    except (JWTError, ValueError):
+        return None
+
+    user = db.query(User).filter(User.id == int(token_data.sub)).first()
+    if not user:
+        return None
+    return user

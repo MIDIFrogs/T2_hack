@@ -4,7 +4,8 @@
 """
 
 from auth import get_password_hash
-from db import SessionLocal, User, CollectionPeriod, UserRole
+from db import SessionLocal
+from models import User, CollectionPeriod, UserRole
 from datetime import datetime, timedelta
 
 def setup_test_data():

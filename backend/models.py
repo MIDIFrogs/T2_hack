@@ -41,6 +41,10 @@ class User(Base):
     category = Column(String(64), nullable=True)
     role = Column(Enum(UserRole), default=UserRole.USER, nullable=False)
 
+    # Доступные дни для отпуска и отгула
+    available_vacation_days = Column(Integer, default=14, nullable=False)
+    available_off_days = Column(Integer, default=5, nullable=False)
+
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
     updated_at = Column(
         DateTime(timezone=True),
@@ -86,6 +90,22 @@ class ScheduleEntry(Base):
     period = relationship("CollectionPeriod")
 
     __table_args__ = (UniqueConstraint("user_id", "period_id", "day", name="uq_schedule_user_period_day"),)
+
+
+class ScheduleDraft(Base):
+    """Черновики расписания для планирования на будущие периоды"""
+    __tablename__ = "schedule_drafts"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    day = Column(Date, nullable=False)
+    status = Column(String(128), nullable=False)
+    meta = Column(JSONB, nullable=True)
+
+    created_at = Column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+
+    __table_args__ = (UniqueConstraint("user_id", "day", name="uq_schedule_draft_user_day"),)
 
 
 class ScheduleTemplate(Base):

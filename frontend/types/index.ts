@@ -20,6 +20,8 @@ export interface User {
   role: UserRole;
   registered: boolean;
   is_verified: boolean;
+  available_vacation_days?: number;
+  available_off_days?: number;
   created_at: string;
   updated_at: string;
 }
@@ -52,6 +54,7 @@ export interface ScheduleMeta {
 export interface ScheduleDayPayload {
   status: string;
   meta?: ScheduleMeta;
+  is_draft?: boolean; // True если это черновик (вне активного периода)
 }
 
 /**
@@ -146,10 +149,32 @@ export enum PaintMode {
  * Paint tool state
  */
 export interface PaintToolState {
-  selectedStatus: DayStatus;
+  selectedStatus: DayStatus | null;
   mode: PaintMode;
   isPainting: boolean;
   selectedRange?: Date[];
+}
+
+/**
+ * Paint tool preset (settings for brush)
+ */
+export interface PaintPreset {
+  start?: string;
+  end?: string;
+  note?: string;
+  splitShift?: boolean;
+  splitParts?: Array<{ start: string; end: string }>;
+}
+
+/**
+ * Paint tool presets for all status types
+ */
+export interface PaintToolPresets {
+  [DayStatus.WORK]: PaintPreset;
+  [DayStatus.OFF]: PaintPreset;
+  [DayStatus.VACATION]: PaintPreset;
+  [DayStatus.SICK]: PaintPreset;
+  [DayStatus.SPLIT]: PaintPreset;
 }
 
 /**
@@ -157,9 +182,9 @@ export interface PaintToolState {
  */
 export const STATUS_COLORS: Record<DayStatus, string> = {
   [DayStatus.WORK]: "#A7FC00",      // Салатовый
-  [DayStatus.OFF]: "#000000",       // Черный
+  [DayStatus.OFF]: "#FFFF00",       // Кислотно-жёлтый
   [DayStatus.VACATION]: "#FF3495",  // Маджента
-  [DayStatus.SICK]: "#00BFFFF",     // Электрик-блю
+  [DayStatus.SICK]: "#FF4444",      // Кислотно-красный
   [DayStatus.SPLIT]: "#0000FF",     // Синий
 };
 
@@ -168,7 +193,7 @@ export const STATUS_COLORS: Record<DayStatus, string> = {
  */
 export const STATUS_LABELS: Record<DayStatus, string> = {
   [DayStatus.WORK]: "Рабочий день",
-  [DayStatus.OFF]: "Выходной",
+  [DayStatus.OFF]: "Отгул",
   [DayStatus.VACATION]: "Отпуск",
   [DayStatus.SICK]: "Больничный",
   [DayStatus.SPLIT]: "Дробящаяся смена",

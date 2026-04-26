@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
 from db import Base, engine, get_db
-from models import User
+from models import User, ScheduleDraft
 from routes_auth import router as auth_router
 from routes_schedule import router as schedule_router
 from routes_periods import router as periods_router
