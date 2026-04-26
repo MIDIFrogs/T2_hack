@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Clock, AlertCircle, CheckCircle, TrendingUp, Minus, Plus } from "lucide-react";
-import { calculateTotalHours, formatHours, formatDateForAPI } from "@/lib/utils";
+import { calculateTotalHours, formatHours, formatHoursShort, formatDateForAPI } from "@/lib/utils";
 import { ScheduleDayPayload, DayStatus } from "@/types";
 import { cn } from "@/lib/utils";
 
@@ -46,30 +46,37 @@ export function StatsCard({ schedule, currentMonth, targetHours: initialTargetHo
     setTargetHours((prev) => prev + 8);
   };
 
-  const stats = [
+    const stats = [
     {
       label: "Отработано",
-      value: formatHours(totalHours),
+      value: (
+        <>
+          <span className="hidden sm:inline">{formatHours(totalHours)}</span>
+          <span className="sm:hidden">{formatHoursShort(totalHours)}</span>
+        </>
+      ),
       icon: Clock,
       color: "text-black",
       bgColor: "bg-white",
     },
-    {
-      label: "Норма",
+        {
+            label: "Норма",
       value: (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
           <button
             onClick={handleDecreaseTarget}
-            className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+            className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors flex-shrink-0"
           >
-            <Minus className="w-4 h-4" />
+            <Minus className="w-3 h-3 sm:w-4 sm:h-4" />
           </button>
-          <span className="font-stencil text-3xl">{formatHours(targetHours)}</span>
+          <span className="font-stencil text-xl sm:text-3xl">
+            {formatHoursShort(targetHours)}
+          </span>
           <button
             onClick={handleIncreaseTarget}
-            className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+            className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors flex-shrink-0"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
           </button>
         </div>
       ),
@@ -77,9 +84,14 @@ export function StatsCard({ schedule, currentMonth, targetHours: initialTargetHo
       color: "text-black",
       bgColor: "bg-white",
     },
-    {
+        {
       label: "Остаток",
-      value: formatHours(remainingHours),
+      value: (
+        <>
+          <span className="hidden sm:inline">{formatHours(remainingHours)}</span>
+          <span className="sm:hidden">{formatHoursShort(remainingHours)}</span>
+        </>
+      ),
       icon: TrendingUp,
       color: isOverwork ? "text-white" : "text-black",
       bgColor: isOverwork ? "bg-black" : "bg-white",
@@ -119,16 +131,16 @@ export function StatsCard({ schedule, currentMonth, targetHours: initialTargetHo
         })}
       </div>
 
-      {/* Progress Bar */}
+            {/* Progress Bar */}
       <motion.div
-        className="bento-card p-2 sm:p-3"
+        className="bento-card p-2 sm:p-3 lg:p-4"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
       >
-        <div className="flex items-center justify-between mb-1 sm:mb-2">
+        <div className="flex items-center justify-between mb-2 sm:mb-3">
           <span className="font-body text-xs sm:text-sm font-medium">Прогресс</span>
-          <span className="font-stencil text-sm sm:text-base lg:text-lg">{Math.round(progress)}%</span>
+          <span className="font-stencil text-xs sm:text-base lg:text-lg">{Math.round(progress)}%</span>
         </div>
         <div className="progress-bar">
           <motion.div

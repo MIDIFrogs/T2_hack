@@ -51,6 +51,14 @@ export function formatHours(hours: number): string {
 }
 
 /**
+ * Format hours for display without minutes (for mobile)
+ */
+export function formatHoursShort(hours: number): string {
+  const h = Math.floor(hours);
+  return `${h}ч`;
+}
+
+/**
  * Get date range for a month
  */
 export function getMonthRange(year: number, month: number): { start: Date; end: Date } {

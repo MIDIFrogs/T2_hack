@@ -30,12 +30,12 @@ export function PaintTool() {
     DayStatus.SPLIT,
   ];
 
-  return (
+    return (
     <div className="flex items-center gap-2 sm:gap-4">
       {/* Brush Icon */}
       <div className="flex items-center gap-1.5 sm:gap-2 text-white flex-shrink-0">
         <Brush className={`w-4 h-4 sm:w-5 sm:h-5 ${!selectedStatus && !isDeleting ? "opacity-50" : ""}`} />
-        <span className="font-body font-medium text-sm sm:text-base">Кисть</span>
+        <span className="hidden sm:block font-body font-medium text-sm">Кисть</span>
       </div>
 
       {/* Divider */}
@@ -55,7 +55,7 @@ export function PaintTool() {
           );
 
           return (
-            <motion.button
+                        <motion.button
               key={status}
               className={cn(
                 "px-2 sm:px-3 py-1.5 sm:py-2 rounded-full font-body text-xs sm:text-sm font-medium transition-all relative flex items-center gap-0.5 sm:gap-1 flex-shrink-0",
@@ -72,8 +72,8 @@ export function PaintTool() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <span className="hidden xs:inline sm:inline">{STATUS_LABELS[status]}</span>
-              <span className="xs:hidden sm:hidden">{status === DayStatus.WORK ? "Раб" : status === DayStatus.OFF ? "Вых" : status === DayStatus.VACATION ? "Отп" : status === DayStatus.SICK ? "Бол" : "Дроб"}</span>
+                            <span className="hidden sm:inline">{STATUS_LABELS[status]}</span>
+              <span className="sm:hidden">{status === DayStatus.WORK ? "Раб." : status === DayStatus.OFF ? "Отг." : status === DayStatus.VACATION ? "Отп." : status === DayStatus.SICK ? "Бол." : "Дроб."}</span>
               {isSelected && hasPreset && (
                 <Settings className="w-2.5 h-2.5 sm:w-3 sm:h-3 opacity-70 flex-shrink-0" />
               )}
@@ -81,7 +81,7 @@ export function PaintTool() {
           );
         })}
 
-        {/* Delete Mode Button */}
+                {/* Delete Mode Button */}
         <motion.button
           className={cn(
             "px-2 sm:px-3 py-1.5 sm:py-2 rounded-full font-body text-xs sm:text-sm font-medium transition-all relative flex items-center gap-0.5 sm:gap-1 flex-shrink-0",
@@ -93,7 +93,7 @@ export function PaintTool() {
           title="Режим удаления"
         >
           <Eraser className="w-4 h-4 sm:w-4 sm:h-4" />
-          <span className="hidden xs:inline sm:inline">{isDeleting ? "Удаление" : ""}</span>
+          <span className="hidden sm:inline">{isDeleting ? "Удаление" : ""}</span>
         </motion.button>
       </div>
     </div>

@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Wallet, Calendar, Clock, TrendingUp, Info, ChevronLeft, ChevronRight } from "lucide-react";
+import { Wallet, Calendar, Clock, TrendingUp, ChevronLeft, ChevronRight, DollarSign, Palmtree, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { api } from "@/lib/api";
-import { SalaryResponse } from "@/types";
+import { api, apiHelpers } from "@/lib/api";
+import { SalaryResponse, HourlyRate } from "@/types";
 import { format, subMonths, addMonths } from "date-fns";
 import { ru } from "date-fns/locale";
 
@@ -20,6 +20,7 @@ export function SalaryStats({
   initialPeriodEnd,
   onRateChange
 }: SalaryStatsProps) {
+  const [rates, setRates] = useState<HourlyRate[]>([]);
   // По умолчанию текущий месяц
   const now = new Date();
   const [periodStart, setPeriodStart] = useState<Date>(
@@ -29,11 +30,36 @@ export function SalaryStats({
     initialPeriodEnd || new Date(now.getFullYear(), now.getMonth() + 1, 0)
   );
 
-  const [salary, setSalary] = useState<SalaryResponse | null>(null);
+    const [salary, setSalary] = useState<SalaryResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const prevSalaryRef = useRef<SalaryResponse | null>(null);
+
+  // Загружаем историю ставок
+  useEffect(() => {
+    const fetchRates = async () => {
+      if (!apiHelpers.isAuthenticated()) {
+        return;
+      }
+
+      try {
+        const data = await api.getHourlyRateHistory();
+        setRates(data);
+      } catch (err) {
+        console.error("Error fetching hourly rates:", err);
+      }
+    };
+
+    fetchRates();
+  }, []);
+
+  // Текущая ставка (самая свежая)
+  const currentRate = rates.length > 0
+    ? [...rates].sort(
+        (a, b) => new Date(b.effective_date).getTime() - new Date(a.effective_date).getTime()
+      )[0]
+    : null;
 
   // Форматируем даты для API
   const periodStartStr = format(periodStart, "yyyy-MM-dd");
@@ -84,7 +110,7 @@ export function SalaryStats({
     setPeriodEnd(new Date(now.getFullYear(), now.getMonth() + 1, 0));
   };
 
-  // Форматирование суммы в рублях
+    // Форматирование суммы в рублях
   const formatMoney = (amount: number): string => {
     return new Intl.NumberFormat("ru-RU", {
       style: "currency",
@@ -92,6 +118,12 @@ export function SalaryStats({
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
+  };
+
+  // Форматирование даты
+  const formatDate = (dateStr: string): string => {
+    const date = new Date(dateStr);
+    return format(date, "dd MMM yyyy", { locale: ru });
   };
 
   if (loading) {
@@ -141,12 +173,12 @@ export function SalaryStats({
       bgColor: "bg-green-50",
       icon: Clock,
     },
-    {
+        {
       label: "Отпускные",
       amount: breakdown.vacation,
       color: "text-pink-600",
       bgColor: "bg-pink-50",
-      icon: Calendar,
+      icon: Palmtree,
     },
     {
       label: "Больничные",
@@ -169,12 +201,12 @@ export function SalaryStats({
       bgColor: "bg-indigo-50",
       icon: Clock,
     },
-    {
+        {
       label: "Выходные",
       amount: breakdown.weekend_holiday,
       color: "text-purple-600",
       bgColor: "bg-purple-50",
-      icon: Calendar,
+      icon: Sun,
     },
     {
       label: "Разбитые смены",
@@ -185,121 +217,189 @@ export function SalaryStats({
     },
   ];
 
-  return (
+    return (
     <motion.div
-      className="space-y-3"
+      className="space-y-4"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
       {/* Заголовок с выбором периода */}
-      <div className="bento-card p-3 sm:p-4">
-        <div className="flex items-center justify-between gap-2">
+      <div className="bento-card p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <Wallet className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
-            <h3 className="font-stencil text-base sm:text-lg">Зарплата</h3>
+            <Wallet className="w-5 h-5 sm:w-6 sm:h-6" />
+            <h3 className="font-display text-lg sm:text-xl">Зарплата</h3>
           </div>
 
-          {/* Навигация по периоду */}
-          <div className="flex items-center gap-1">
+                    {/* Навигация по периоду */}
+          <div className="flex items-center gap-2">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={handlePreviousMonth}
-              className="p-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
+              className="p-2 rounded-lg hover:bg-gray-100 text-black transition-colors"
               title="Предыдущий месяц"
             >
-              <ChevronLeft className="w-4 h-4" />
+              <ChevronLeft className="w-5 h-5" />
             </motion.button>
 
             <button
               onClick={handleCurrentMonth}
-              className="px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors min-w-[100px] sm:min-w-[140px]"
+              className="px-4 py-2 rounded-full text-sm font-display bg-t2-salad hover:opacity-90 text-black transition-colors min-w-fit"
             >
-              {format(periodStart, "MMMM yyyy", { locale: ru })}
+              {format(periodStart, "LLLL yyyy", { locale: ru })}
             </button>
 
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={handleNextMonth}
-              className="p-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
+              className="p-2 rounded-lg hover:bg-gray-100 text-black transition-colors"
               title="Следующий месяц"
               disabled={periodStart >= now}
             >
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className="w-5 h-5" />
             </motion.button>
           </div>
         </div>
       </div>
 
-      {/* Общая информация */}
-      <div className="grid grid-cols-1 gap-2">
-        {/* Общая сумма */}
-        <motion.div
-          className="bento-card p-3 sm:p-4 bg-gradient-to-br from-green-50 to-green-100"
-          initial={isInitialLoad ? { opacity: 0, scale: 0.9 } : false}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: isInitialLoad ? 0.1 : 0 }}
-        >
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-xs sm:text-sm text-green-700 font-medium mb-1">
-                Итого за период
-              </div>
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={`total-${breakdown.total}`}
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 10 }}
-                  transition={{ duration: 0.2 }}
-                  className="font-stencil text-xl sm:text-2xl text-green-900"
-                >
-                  {formatMoney(breakdown.total)}
-                </motion.div>
-              </AnimatePresence>
+            {/* Общая сумма */}
+      <div className="bento-card p-4 sm:p-6 bg-t2-salad">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <div className="text-sm text-black/70 font-body mb-2">
+              Начислено за период
             </div>
-            <div className="text-right">
-              <div className="text-xs text-green-600">
-                {format(periodStart, "dd MMM", { locale: ru })} – {format(periodEnd, "dd MMM yyyy", { locale: ru })}
-              </div>
-              <div className="text-xs text-green-600 mt-1">
-                {total_hours} ч.
-              </div>
-            </div>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`total-${breakdown.total}`}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.2 }}
+                className="font-stencil text-3xl sm:text-4xl text-black"
+              >
+                {formatMoney(breakdown.total)}
+              </motion.div>
+            </AnimatePresence>
           </div>
-        </motion.div>
+          <div className="text-right text-sm text-black/70 font-body">
+            <div>{format(periodStart, "d MMM", { locale: ru })} – {format(periodEnd, "d MMM yyyy", { locale: ru })}</div>
+            <div className="mt-1 font-stencil text-black">{total_hours} часов</div>
+          </div>
+        </div>
       </div>
 
-      {/* Детализация по типам выплат */}
-      <motion.div
-        className="bento-card p-3 sm:p-4"
-        initial={isInitialLoad ? { opacity: 0 } : false}
-        animate={{ opacity: 1 }}
-        transition={{ delay: isInitialLoad ? 0.3 : 0 }}
-      >
-        <h4 className="font-stencil text-sm sm:text-base mb-3">Детализация выплат</h4>
+      {/* Почасовая ставка и дни */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Почасовая ставка */}
+        <div className="bento-card p-4 sm:p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <DollarSign className="w-5 h-5" />
+            <h4 className="font-display text-base sm:text-lg">Почасовая ставка</h4>
+          </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          {currentRate ? (
+            <div>
+              <div className="font-stencil text-2xl sm:text-3xl text-black mb-2">
+                {formatMoney(currentRate.hourly_rate)}
+                <span className="text-sm sm:text-base text-gray-600">/час</span>
+              </div>
+              <div className="text-xs text-gray-600 font-body">
+                с {formatDate(currentRate.effective_date)}
+              </div>
+            </div>
+          ) : (
+            <div className="text-sm text-gray-500 font-body">
+              Ставка не указана
+            </div>
+          )}
+        </div>
+
+                {/* Количество дней */}
+        {Object.keys(days_summary).length > 0 && (
+          <div className="bento-card p-4 sm:p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Calendar className="w-5 h-5" />
+              <h4 className="font-display text-base sm:text-lg">Статистика дней</h4>
+            </div>
+
+            <div className="space-y-3">
+              {Object.entries(days_summary).map(([status, count]) => {
+                let label = status;
+
+                if (status.toLowerCase().includes("work")) {
+                  label = "Рабочие дни";
+                } else if (status.toLowerCase().includes("vacation")) {
+                  label = "Отпуск";
+                } else if (status.toLowerCase().includes("sick")) {
+                  label = "Больничный";
+                } else if (status.toLowerCase().includes("off")) {
+                  label = "Выходные";
+                } else if (status.toLowerCase().includes("split")) {
+                  label = "Дробящаяся смена";
+                }
+
+                return (
+                  <div key={status} className="p-3 rounded-xl flex items-center justify-between border border-black/10">
+                    <span className="text-sm font-body text-black/70">{label}</span>
+                    <span className="font-stencil text-lg text-black">{count}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+
+                        {/* Детализация по типам выплат */}
+      <div className="bento-card p-4 sm:p-6">
+        <h4 className="font-display text-lg sm:text-xl mb-4">Детализация выплат</h4>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {salaryItems.map((item, index) => {
             if (item.amount === 0) return null;
 
             const Icon = item.icon;
+                        // Определяем цвет иконки и подложки на основе типа выплаты (пастельные тона)
+            let iconBgColor = "bg-slate-100";
+            let iconColor = "text-slate-600";
+
+            if (item.label.includes("Рабочие")) {
+              iconBgColor = "bg-green-100";
+              iconColor = "text-green-600";
+            } else if (item.label.includes("Отпуск")) {
+              iconBgColor = "bg-pink-100";
+              iconColor = "text-pink-600";
+            } else if (item.label.includes("Больничные")) {
+              iconBgColor = "bg-red-100";
+              iconColor = "text-red-600";
+            } else if (item.label.includes("Сверхурочные")) {
+              iconBgColor = "bg-orange-100";
+              iconColor = "text-orange-600";
+            } else if (item.label.includes("Ночные")) {
+              iconBgColor = "bg-indigo-100";
+              iconColor = "text-indigo-600";
+            } else if (item.label.includes("Выходные")) {
+              iconBgColor = "bg-yellow-100";
+              iconColor = "text-yellow-600";
+            } else if (item.label.includes("Дробящаяся смена")) {
+              iconBgColor = "bg-blue-100";
+              iconColor = "text-blue-600";
+            }
+
             return (
-              <motion.div
+              <div
                 key={item.label}
-                className={cn(
-                  "flex items-center justify-between p-2 sm:p-3 rounded-lg",
-                  item.bgColor
-                )}
-                initial={isInitialLoad ? { opacity: 0, x: -20 } : false}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: isInitialLoad ? 0.4 + index * 0.05 : 0 }}
+                className="p-4 rounded-xl bg-white border border-black/10 flex items-center justify-between hover:shadow-md transition-shadow"
               >
-                <div className="flex items-center gap-1.5 sm:gap-2">
-                  <Icon className={cn("w-3.5 h-3.5 sm:w-4 sm:h-4", item.color)} />
-                  <span className={cn("text-xs sm:text-sm font-medium", item.color)}>
+                <div className="flex items-center gap-3">
+                                    <div className={`w-10 h-10 rounded-full ${iconBgColor} flex items-center justify-center`}>
+                    <Icon className={`w-5 h-5 ${iconColor}`} />
+                  </div>
+                  <span className="text-sm font-body text-black/70">
                     {item.label}
                   </span>
                 </div>
@@ -310,67 +410,22 @@ export function SalaryStats({
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.8 }}
                     transition={{ duration: 0.2 }}
-                    className={cn("font-stencil text-xs sm:text-sm", item.color)}
+                    className="font-stencil text-base text-black"
                   >
                     {formatMoney(item.amount)}
                   </motion.span>
                 </AnimatePresence>
-              </motion.div>
+              </div>
             );
           })}
         </div>
 
-        {salaryItems.every((item) => item.amount === 0) && (
-          <div className="text-center py-4 text-gray-400 text-xs sm:text-sm">
+                {salaryItems.every((item) => item.amount === 0) && (
+          <div className="text-center py-6 text-gray-400 text-sm font-body">
             За выбранный период нет начислений
           </div>
         )}
-      </motion.div>
-
-      {/* Информация о днях */}
-      {Object.keys(days_summary).length > 0 && (
-        <motion.div
-          className="bento-card p-3 sm:p-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-        >
-          <h4 className="font-stencil text-sm sm:text-base mb-2">Количество дней</h4>
-          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs sm:text-sm">
-            {Object.entries(days_summary).map(([status, count]) => (
-              <div key={status} className="flex gap-2">
-                <span className="text-gray-600 capitalize">{status}:</span>
-                <span className="font-medium">{count}</span>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-      )}
-
-      {/* Информация о расчете */}
-      <motion.div
-        className={cn(
-          "bento-card p-2.5 sm:p-3",
-          "flex items-start gap-2 text-xs",
-          current_hourly_rate ? "text-gray-600" : "text-yellow-700 bg-yellow-50"
-        )}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.6 }}
-      >
-        <Info className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
-        <div className="space-y-0.5">
-          {!current_hourly_rate && (
-            <div className="font-medium text-yellow-800 text-xs">
-              Укажите вашу почасовую ставку для расчета зарплаты
-            </div>
-          )}
-          <div className="text-gray-500 text-[10px] sm:text-xs">
-            Расчет производится на сервере согласно ТК РФ с учетом ночных часов (доплата 20%),
-            сверхурочных (первые 2 часа x1.5, остальные x2), работы в выходные (x2).
-          </div>
-        </div>
-      </motion.div>
+      </div>
     </motion.div>
   );
 }
