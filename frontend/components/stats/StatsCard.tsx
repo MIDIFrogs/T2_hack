@@ -55,21 +55,21 @@ export function StatsCard({ schedule, currentMonth, targetHours: initialTargetHo
       bgColor: "bg-white",
     },
     {
-      label: "Норма",
+            label: "Норма",
       value: (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
           <button
             onClick={handleDecreaseTarget}
-            className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+            className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors flex-shrink-0"
           >
-            <Minus className="w-4 h-4" />
+            <Minus className="w-3 h-3 sm:w-4 sm:h-4" />
           </button>
-          <span className="font-stencil text-3xl">{formatHours(targetHours)}</span>
+          <span className="font-stencil text-xl sm:text-3xl">{formatHours(targetHours)}</span>
           <button
             onClick={handleIncreaseTarget}
-            className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+            className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors flex-shrink-0"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
           </button>
         </div>
       ),
