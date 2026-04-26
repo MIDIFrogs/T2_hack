@@ -59,7 +59,7 @@ export function StatsCard({ schedule, currentMonth, targetHours: initialTargetHo
       color: "text-black",
       bgColor: "bg-white",
     },
-    {
+        {
             label: "Норма",
       value: (
         <div className="flex items-center gap-1 sm:gap-2">
@@ -70,8 +70,7 @@ export function StatsCard({ schedule, currentMonth, targetHours: initialTargetHo
             <Minus className="w-3 h-3 sm:w-4 sm:h-4" />
           </button>
           <span className="font-stencil text-xl sm:text-3xl">
-            <span className="hidden sm:inline">{formatHours(targetHours)}</span>
-            <span className="sm:hidden">{formatHoursShort(targetHours)}</span>
+            {formatHoursShort(targetHours)}
           </span>
           <button
             onClick={handleIncreaseTarget}

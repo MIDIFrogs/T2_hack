@@ -72,15 +72,8 @@ export function PaintTool() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <span className="hidden sm:inline">{STATUS_LABELS[status]}</span>
-              {/* Mobile icons instead of text */}
-              <div className="sm:hidden flex items-center gap-0.5">
-                {status === DayStatus.WORK && "💼"}
-                {status === DayStatus.OFF && "🏖️"}
-                {status === DayStatus.VACATION && "✈️"}
-                {status === DayStatus.SICK && "🏥"}
-                {status === DayStatus.SPLIT && "⏱️"}
-              </div>
+                            <span className="hidden sm:inline">{STATUS_LABELS[status]}</span>
+              <span className="sm:hidden">{status === DayStatus.WORK ? "Раб." : status === DayStatus.OFF ? "Отг." : status === DayStatus.VACATION ? "Отп." : status === DayStatus.SICK ? "Бол." : "Дроб."}</span>
               {isSelected && hasPreset && (
                 <Settings className="w-2.5 h-2.5 sm:w-3 sm:h-3 opacity-70 flex-shrink-0" />
               )}

@@ -160,32 +160,32 @@ h3 {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s;
   font-family: 'Inter', sans-serif;
   font-weight: 800;
-  font-size: 14px;
+  font-size: 12px;
   user-select: none;
   position: relative;
 }
 
 @media (min-width: 640px) {
   .calendar-day {
-    font-size: 16px;
-    border-radius: 12px;
+    font-size: 14px;
+    border-radius: 8px;
   }
 }
 
 @media (min-width: 1024px) {
   .calendar-day {
-    font-size: 20px;
+    font-size: 16px;
   }
 }
 
 @media (min-width: 1280px) {
   .calendar-day {
-    font-size: 24px;
+    font-size: 18px;
   }
 }
 
@@ -493,12 +493,12 @@ h3 {
 }
 
 /* Mobile specific optimizations */
-@media (max-width: 640px) {
-  /* Увеличиваем clickable области */
-  .calendar-day {
-    min-height: 40px;
-    font-size: 16px; /* Предотвращает zoom на iOS */
-  }
+  @media (max-width: 640px) {
+    /* Увеличиваем clickable области */
+    .calendar-day {
+      min-height: 36px;
+      font-size: 12px; /* Предотвращает zoom на iOS */
+    }
 
   /* Улучшаем отступы на мобильных */
   .bento-card {
@@ -531,11 +531,11 @@ h3 {
 }
 
 /* Small mobile phones */
-@media (max-width: 380px) {
-  /* Дополнительная адаптация для маленьких экранов */
-  .calendar-day {
-    border-radius: 6px;
-    font-size: 14px;
+  @media (max-width: 380px) {
+    /* Дополнительная адаптация для маленьких экранов */
+    .calendar-day {
+      border-radius: 5px;
+      font-size: 11px;
   }
 
   .bento-card {
