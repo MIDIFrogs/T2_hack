@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Clock, AlertCircle, CheckCircle, TrendingUp, Minus, Plus } from "lucide-react";
-import { calculateTotalHours, formatHours, formatDateForAPI } from "@/lib/utils";
+import { calculateTotalHours, formatHours, formatHoursShort, formatDateForAPI } from "@/lib/utils";
 import { ScheduleDayPayload, DayStatus } from "@/types";
 import { cn } from "@/lib/utils";
 
@@ -46,10 +46,15 @@ export function StatsCard({ schedule, currentMonth, targetHours: initialTargetHo
     setTargetHours((prev) => prev + 8);
   };
 
-  const stats = [
+    const stats = [
     {
       label: "Отработано",
-      value: formatHours(totalHours),
+      value: (
+        <>
+          <span className="hidden sm:inline">{formatHours(totalHours)}</span>
+          <span className="sm:hidden">{formatHoursShort(totalHours)}</span>
+        </>
+      ),
       icon: Clock,
       color: "text-black",
       bgColor: "bg-white",
@@ -64,7 +69,10 @@ export function StatsCard({ schedule, currentMonth, targetHours: initialTargetHo
           >
             <Minus className="w-3 h-3 sm:w-4 sm:h-4" />
           </button>
-          <span className="font-stencil text-xl sm:text-3xl">{formatHours(targetHours)}</span>
+          <span className="font-stencil text-xl sm:text-3xl">
+            <span className="hidden sm:inline">{formatHours(targetHours)}</span>
+            <span className="sm:hidden">{formatHoursShort(targetHours)}</span>
+          </span>
           <button
             onClick={handleIncreaseTarget}
             className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors flex-shrink-0"
@@ -77,9 +85,14 @@ export function StatsCard({ schedule, currentMonth, targetHours: initialTargetHo
       color: "text-black",
       bgColor: "bg-white",
     },
-    {
+        {
       label: "Остаток",
-      value: formatHours(remainingHours),
+      value: (
+        <>
+          <span className="hidden sm:inline">{formatHours(remainingHours)}</span>
+          <span className="sm:hidden">{formatHoursShort(remainingHours)}</span>
+        </>
+      ),
       icon: TrendingUp,
       color: isOverwork ? "text-white" : "text-black",
       bgColor: isOverwork ? "bg-black" : "bg-white",
