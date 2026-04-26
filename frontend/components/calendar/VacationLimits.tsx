@@ -44,7 +44,7 @@ export const VacationLimits = forwardRef<VacationLimitsRef, VacationLimitsProps>
       loadAvailableLimits();
     }, []); // Load only once on mount
 
-    // Calculate used days dynamically from schedule
+        // Calculate used days dynamically from schedule
     const usedDays = useMemo(() => {
       if (!currentPeriod || !schedule) {
         return { used_vacation: 0, used_off: 0 };
@@ -70,6 +70,15 @@ export const VacationLimits = forwardRef<VacationLimitsRef, VacationLimitsProps>
 
       return { used_vacation, used_off };
     }, [schedule, currentPeriod]);
+
+    // Calculate remaining days
+    const remainingDays = useMemo(() => {
+      if (!limits) return { remaining_vacation: 0, remaining_off: 0 };
+      return {
+        remaining_vacation: Math.max(0, limits.available_vacation_days - usedDays.used_vacation),
+        remaining_off: Math.max(0, limits.available_off_days - usedDays.used_off),
+      };
+    }, [limits, usedDays]);
 
     // Expose refresh function via ref
     useImperativeHandle(ref, () => ({
@@ -97,45 +106,45 @@ export const VacationLimits = forwardRef<VacationLimitsRef, VacationLimitsProps>
         animate={{ opacity: 1, y: 0 }}
       >
         <div className="grid grid-cols-2 gap-2 sm:gap-4">
-          {/* Отпускные */}
+                    {/* Отпускные */}
           <div className="space-y-2">
             <div className="flex items-center gap-1 sm:gap-2">
               <Umbrella className="w-4 h-4 sm:w-5 sm:h-5 text-t2-magenta flex-shrink-0" />
               <span className="font-body text-xs sm:text-sm font-medium">Отпускные</span>
             </div>
                         <div className="flex items-baseline gap-1 sm:gap-2">
-              <span className={`font-stencil text-xl sm:text-3xl ${usedDays.used_vacation > limits.available_vacation_days ? 'text-red-500' : ''}`}>
-                {usedDays.used_vacation}
+              <span className={`font-stencil text-xl sm:text-3xl ${remainingDays.remaining_vacation === 0 ? 'text-red-500' : ''}`}>
+                {remainingDays.remaining_vacation}
               </span>
               <span className="font-body text-[10px] sm:text-xs text-gray-500">/{limits.available_vacation_days}</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
               <motion.div
-                className={`h-full ${usedDays.used_vacation > limits.available_vacation_days ? 'bg-red-500' : 'bg-t2-magenta'}`}
+                className={`h-full ${remainingDays.remaining_vacation === 0 ? 'bg-red-500' : 'bg-t2-magenta'}`}
                 initial={{ width: 0 }}
-                animate={{ width: `${Math.min((usedDays.used_vacation / limits.available_vacation_days) * 100, 100)}%` }}
+                animate={{ width: `${Math.min((remainingDays.remaining_vacation / limits.available_vacation_days) * 100, 100)}%` }}
                 transition={{ duration: 0.5 }}
               />
             </div>
           </div>
 
-                    {/* Отгулы */}
+                                        {/* Отгулы */}
           <div className="space-y-2">
             <div className="flex items-center gap-1 sm:gap-2">
               <Coffee className="w-4 h-4 sm:w-5 sm:h-5 text-t2-salad flex-shrink-0" />
               <span className="font-body text-xs sm:text-sm font-medium">Отгулы</span>
             </div>
                         <div className="flex items-baseline gap-1 sm:gap-2">
-              <span className={`font-stencil text-xl sm:text-3xl ${usedDays.used_off > limits.available_off_days ? 'text-red-500' : ''}`}>
-                {usedDays.used_off}
+              <span className={`font-stencil text-xl sm:text-3xl ${remainingDays.remaining_off === 0 ? 'text-red-500' : ''}`}>
+                {remainingDays.remaining_off}
               </span>
               <span className="font-body text-[10px] sm:text-xs text-gray-500">/{limits.available_off_days}</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
               <motion.div
-                className={`h-full ${usedDays.used_off > limits.available_off_days ? 'bg-red-500' : 'bg-t2-salad'}`}
+                className={`h-full ${remainingDays.remaining_off === 0 ? 'bg-red-500' : 'bg-t2-salad'}`}
                 initial={{ width: 0 }}
-                animate={{ width: `${Math.min((usedDays.used_off / limits.available_off_days) * 100, 100)}%` }}
+                animate={{ width: `${Math.min((remainingDays.remaining_off / limits.available_off_days) * 100, 100)}%` }}
                 transition={{ duration: 0.5 }}
               />
             </div>

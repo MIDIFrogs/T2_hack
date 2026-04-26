@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Trophy, Target, TrendingUp, Award, Clock, Code, Coffee, Zap, Heart, Star, Flame } from "lucide-react";
+import { ArrowLeft, Trophy, Target, TrendingUp, Award, Clock, Code, Coffee, Zap, Heart, Star, Flame, Lightbulb, Palette, Copy } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
@@ -72,17 +72,19 @@ export default function ProfilePage() {
     }
   };
 
-  const achievements = [
-    { id: 1, title: "Hello, World!", description: "Первые часы в системе — начало пути", icon: Code, unlocked: (stats?.totalHours || 0) > 0 },
-    { id: 2, title: "Clean Code", description: "Идеальный порядок: 100% график заполнен", icon: Trophy, unlocked: stats?.completion === 100 },
-    { id: 3, title: "Coffee Driven Dev", description: "Кофеин и код: 180+ часов за месяц", icon: Coffee, unlocked: (stats?.totalHours || 0) >= 180 },
-    { id: 4, title: "Senior Developer", description: "Тысяча часов на часах — мастерство", icon: Award, unlocked: (stats?.totalHours || 0) >= 1000 },
-    { id: 5, title: "Git Commit", description: "Первая неделя сохранена в истории", icon: Star, unlocked: (stats?.workDays || 0) >= 5 },
-    { id: 6, title: "Форрест Гамп", description: "Бегун: 50+ рабочих дней позади", icon: Zap, unlocked: (stats?.workDays || 0) >= 50 },
-    { id: 7, title: "Work-Life Balance", description: "Гармония: и работа, и отдых", icon: Heart, unlocked: (stats?.workDays || 0) > 0 && (stats?.offDays || 0) > 0 },
-    { id: 8, title: "Евгений Онегин", description: "Свободный художник: 30+ отгулов", icon: TrendingUp, unlocked: (stats?.offDays || 0) >= 30 },
-    { id: 9, title: "Мастер и Маргарита", description: "Магия: 200 часов отработано", icon: Flame, unlocked: (stats?.totalHours || 0) >= 200 },
-    { id: 10, title: "100% Completion", description: "Платиновый трофей: все достижения", icon: Target, unlocked: false },
+    const achievements = [
+    { id: 1, title: "Hello World!", description: "Поставить первые часы", icon: Code, unlocked: (stats?.totalHours || 0) > 0 },
+    { id: 2, title: "Упорядоченность", description: "Заполнить полностью график", icon: Trophy, unlocked: stats?.completion === 100 },
+    { id: 3, title: "Идеальный месяц", description: "Ни разу не перенести задачу в течение месяца", icon: Star, unlocked: false },
+    { id: 4, title: "Ранняя пташка", description: "Составить преимущественно утреннее расписание", icon: Lightbulb, unlocked: false },
+    { id: 5, title: "Сова", description: "Составить вечернее расписание", icon: Clock, unlocked: false },
+    { id: 6, title: "Плановый перекур", description: "Запланировать 5 перерывов по 10 минут в день", icon: Coffee, unlocked: false },
+    { id: 7, title: "Золотая середина", description: "Заполнить 80% рабочих дней и 20% выходных", icon: Target, unlocked: false },
+    { id: 8, title: "Шрёдингер", description: "Составить два взаимоисключающих варианта расписания", icon: Zap, unlocked: false },
+    { id: 9, title: "Археолог", description: "Взять задачу, которую планировали год назад", icon: Award, unlocked: false },
+    { id: 10, title: "Дубликат", description: "Составить расписание, идентичное другого сотрудника", icon: Copy, unlocked: false },
+    { id: 11, title: "Да будет свет", description: "Назначить отпуск", icon: Heart, unlocked: false },
+    { id: 12, title: "Художник", description: "Нарисуй фигуру в календаре и поделись ею", icon: Palette, unlocked: false },
   ];
 
   if (isLoading) {
