@@ -119,16 +119,16 @@ export function StatsCard({ schedule, currentMonth, targetHours: initialTargetHo
         })}
       </div>
 
-      {/* Progress Bar */}
+            {/* Progress Bar */}
       <motion.div
-        className="bento-card p-2 sm:p-3"
+        className="bento-card p-2 sm:p-3 lg:p-4"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
       >
-        <div className="flex items-center justify-between mb-1 sm:mb-2">
+        <div className="flex items-center justify-between mb-2 sm:mb-3">
           <span className="font-body text-xs sm:text-sm font-medium">Прогресс</span>
-          <span className="font-stencil text-sm sm:text-base lg:text-lg">{Math.round(progress)}%</span>
+          <span className="font-stencil text-xs sm:text-base lg:text-lg">{Math.round(progress)}%</span>
         </div>
         <div className="progress-bar">
           <motion.div
