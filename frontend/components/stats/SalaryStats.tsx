@@ -338,6 +338,8 @@ export function SalaryStats({
                   label = "Больничный";
                 } else if (status.toLowerCase().includes("off")) {
                   label = "Выходные";
+                } else if (status.toLowerCase().includes("split")) {
+                  label = "Дробящаяся смена";
                 }
 
                 return (
@@ -383,7 +385,7 @@ export function SalaryStats({
             } else if (item.label.includes("Выходные")) {
               iconBgColor = "bg-yellow-100";
               iconColor = "text-yellow-600";
-            } else if (item.label.includes("Разбитые")) {
+            } else if (item.label.includes("Дробящаяся смена")) {
               iconBgColor = "bg-blue-100";
               iconColor = "text-blue-600";
             }

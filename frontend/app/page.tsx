@@ -117,7 +117,7 @@ export default function HomePage() {
       // Проверяем, что кнопка мыши нажата
       if (e.buttons !== 1) return;
 
-            // Режим удаления
+                  // Режим удаления
       if (currentIsDeleting) {
         // Проверяем, что это drag
         if (dragStartPosition) {
@@ -129,14 +129,8 @@ export default function HomePage() {
         }
 
         const dateStr = formatDateForAPI(date);
-        const daySchedule = schedule[dateStr];
 
-        // Не удаляем дни в режиме планирования (черновики)
-        if (daySchedule?.is_draft) {
-          return;
-        }
-
-        // Удаляем день
+        // Удаляем день (работает и для черновиков, и для обычных дней)
         removeDay(dateStr);
         setHasUnsavedChanges(true);
         return;
