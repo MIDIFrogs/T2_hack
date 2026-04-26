@@ -296,7 +296,7 @@ export default function HomePage() {
       <Header />
 
       <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 lg:py-8 max-w-7xl">
-        <motion.div
+                <motion.div
           className="space-y-4 sm:space-y-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -308,45 +308,47 @@ export default function HomePage() {
           {/* Vacation Limits */}
           <VacationLimits ref={vacationLimitsRef} currentPeriod={currentPeriod} schedule={schedule} />
 
-          {/* Paint & Actions Container */}
-          <motion.div
-            className="bg-black rounded-full px-3 sm:px-4 lg:px-6 py-2 sm:py-3 flex items-center gap-2 sm:gap-4 overflow-x-auto"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            {/* Paint Tool */}
-            <div className="flex-shrink-0">
-              <PaintTool />
-            </div>
-
-            {/* Divider */}
-            <div className="w-px h-6 sm:h-8 bg-white/20 flex-shrink-0" />
-
-            {/* Actions */}
-            <div className="flex items-center gap-2 ml-auto flex-shrink-0">
-              {/* Quick Fill */}
-              <div className="flex items-center gap-2 group">
-                <span className="hidden sm:block font-body text-sm text-white opacity-0 group-hover:opacity-100 transition-all duration-500 ease-out whitespace-nowrap overflow-hidden max-w-0 group-hover:max-w-[200px]">
-                  Быстрое заполнение
-                </span>
-                <motion.button
-                  onClick={() => setIsQuickFillOpen(true)}
-                  className="p-1.5 sm:p-2 text-white hover:bg-white/10 rounded-full transition-colors flex-shrink-0"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                >
-                  <Calendar className="w-4 h-4 sm:w-5 sm:h-5" />
-                </motion.button>
+          {/* Calendar and Paint Tool */}
+          <div className="space-y-0">
+            {/* Paint & Actions Container */}
+            <motion.div
+              className="bg-black rounded-t-3xl px-3 sm:px-4 lg:px-6 py-2 sm:py-3 flex items-center gap-2 sm:gap-4 overflow-x-auto"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              {/* Paint Tool */}
+              <div className="flex-shrink-0">
+                <PaintTool />
               </div>
 
               {/* Divider */}
-              <div className="w-px h-8 bg-white/20 flex-shrink-0" />
-            </div>
-          </motion.div>
+              <div className="w-px h-6 sm:h-8 bg-white/20 flex-shrink-0" />
 
-          {/* Calendar */}
-          <div className="bento-card p-3 sm:p-4 lg:p-6">
+              {/* Actions */}
+              <div className="flex items-center gap-2 ml-auto flex-shrink-0">
+                {/* Quick Fill */}
+                <div className="flex items-center gap-2 group">
+                  <span className="hidden sm:block font-body text-sm text-white opacity-0 group-hover:opacity-100 transition-all duration-500 ease-out whitespace-nowrap overflow-hidden max-w-0 group-hover:max-w-[200px]">
+                    Быстрое заполнение
+                  </span>
+                  <motion.button
+                    onClick={() => setIsQuickFillOpen(true)}
+                    className="p-1.5 sm:p-2 text-white hover:bg-white/10 rounded-full transition-colors flex-shrink-0"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                  >
+                    <Calendar className="w-4 h-4 sm:w-5 sm:h-5" />
+                  </motion.button>
+                </div>
+
+                {/* Divider */}
+                <div className="w-px h-8 bg-white/20 flex-shrink-0" />
+              </div>
+            </motion.div>
+
+            {/* Calendar */}
+            <div className="bento-card rounded-t-none p-3 sm:p-4 lg:p-6">
             <CalendarGrid
               month={currentMonth}
               schedule={schedule}
@@ -356,6 +358,7 @@ export default function HomePage() {
               onDayMouseEnter={handleDayMouseEnter}
               currentPeriod={currentPeriod}
             />
+            </div>
           </div>
 
           {/* Stats */}

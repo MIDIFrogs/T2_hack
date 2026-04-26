@@ -91,7 +91,7 @@ export const VacationLimits = forwardRef<VacationLimitsRef, VacationLimitsProps>
     }
 
     return (
-      <motion.div
+            <motion.div
         className="bento-card p-3 sm:p-4 lg:p-6"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -99,15 +99,15 @@ export const VacationLimits = forwardRef<VacationLimitsRef, VacationLimitsProps>
         <div className="grid grid-cols-2 gap-3 sm:gap-4">
           {/* Отпускные */}
           <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <Umbrella className="w-4 h-4 sm:w-5 sm:h-5 text-t2-magenta" />
-              <span className="font-body text-sm font-medium">Отпускные</span>
+            <div className="flex items-center gap-1 sm:gap-2">
+              <Umbrella className="w-4 h-4 sm:w-5 sm:h-5 text-t2-magenta flex-shrink-0" />
+              <span className="font-body text-xs sm:text-sm font-medium">Отпускные</span>
             </div>
-            <div className="flex items-baseline gap-2">
-              <span className={`font-stencil text-2xl sm:text-3xl ${usedDays.used_vacation > limits.available_vacation_days ? 'text-red-500' : ''}`}>
+                        <div className="flex items-baseline gap-1 sm:gap-2">
+              <span className={`font-stencil text-xl sm:text-3xl ${usedDays.used_vacation > limits.available_vacation_days ? 'text-red-500' : ''}`}>
                 {usedDays.used_vacation}
               </span>
-              <span className="font-body text-xs text-gray-500">из {limits.available_vacation_days}</span>
+              <span className="font-body text-[10px] sm:text-xs text-gray-500">/{limits.available_vacation_days}</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
               <motion.div
@@ -119,17 +119,17 @@ export const VacationLimits = forwardRef<VacationLimitsRef, VacationLimitsProps>
             </div>
           </div>
 
-          {/* Отгулы */}
+                    {/* Отгулы */}
           <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <Coffee className="w-4 h-4 sm:w-5 sm:h-5 text-t2-salad" />
-              <span className="font-body text-sm font-medium">Отгулы</span>
+            <div className="flex items-center gap-1 sm:gap-2">
+              <Coffee className="w-4 h-4 sm:w-5 sm:h-5 text-t2-salad flex-shrink-0" />
+              <span className="font-body text-xs sm:text-sm font-medium">Отгулы</span>
             </div>
-            <div className="flex items-baseline gap-2">
-              <span className={`font-stencil text-2xl sm:text-3xl ${usedDays.used_off > limits.available_off_days ? 'text-red-500' : ''}`}>
+                        <div className="flex items-baseline gap-1 sm:gap-2">
+              <span className={`font-stencil text-xl sm:text-3xl ${usedDays.used_off > limits.available_off_days ? 'text-red-500' : ''}`}>
                 {usedDays.used_off}
               </span>
-              <span className="font-body text-xs text-gray-500">из {limits.available_off_days}</span>
+              <span className="font-body text-[10px] sm:text-xs text-gray-500">/{limits.available_off_days}</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
               <motion.div

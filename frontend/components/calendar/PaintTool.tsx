@@ -30,12 +30,12 @@ export function PaintTool() {
     DayStatus.SPLIT,
   ];
 
-  return (
+    return (
     <div className="flex items-center gap-2 sm:gap-4">
       {/* Brush Icon */}
       <div className="flex items-center gap-1.5 sm:gap-2 text-white flex-shrink-0">
         <Brush className={`w-4 h-4 sm:w-5 sm:h-5 ${!selectedStatus && !isDeleting ? "opacity-50" : ""}`} />
-        <span className="font-body font-medium text-sm sm:text-base">Кисть</span>
+        <span className="hidden sm:block font-body font-medium text-sm">Кисть</span>
       </div>
 
       {/* Divider */}
