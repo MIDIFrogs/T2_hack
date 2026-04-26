@@ -232,13 +232,13 @@ export function SalaryStats({
             <h3 className="font-display text-lg sm:text-xl">Зарплата</h3>
           </div>
 
-          {/* Навигация по периоду */}
+                    {/* Навигация по периоду */}
           <div className="flex items-center gap-2">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={handlePreviousMonth}
-              className="p-2 rounded-lg bg-black hover:bg-gray-800 text-white transition-colors"
+              className="p-2 rounded-lg hover:bg-gray-100 text-black transition-colors"
               title="Предыдущий месяц"
             >
               <ChevronLeft className="w-5 h-5" />
@@ -255,7 +255,7 @@ export function SalaryStats({
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={handleNextMonth}
-              className="p-2 rounded-lg bg-black hover:bg-gray-800 text-white transition-colors"
+              className="p-2 rounded-lg hover:bg-gray-100 text-black transition-colors"
               title="Следующий месяц"
               disabled={periodStart >= now}
             >
@@ -265,13 +265,8 @@ export function SalaryStats({
         </div>
       </div>
 
-      {/* Общая сумма */}
-      <motion.div
-        className="bento-card p-4 sm:p-6 bg-t2-salad"
-        initial={isInitialLoad ? { opacity: 0, scale: 0.9 } : false}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: isInitialLoad ? 0.1 : 0 }}
-      >
+            {/* Общая сумма */}
+      <div className="bento-card p-4 sm:p-6 bg-t2-salad">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <div className="text-sm text-black/70 font-body mb-2">
@@ -295,17 +290,12 @@ export function SalaryStats({
             <div className="mt-1 font-stencil text-black">{total_hours} часов</div>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Почасовая ставка и дни */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {/* Почасовая ставка */}
-        <motion.div
-          className="bento-card p-4 sm:p-6"
-          initial={isInitialLoad ? { opacity: 0, x: -20 } : false}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: isInitialLoad ? 0.15 : 0 }}
-        >
+                {/* Почасовая ставка */}
+        <div className="bento-card p-4 sm:p-6">
           <div className="flex items-center gap-2 mb-4">
             <DollarSign className="w-5 h-5" />
             <h4 className="font-display text-base sm:text-lg">Почасовая ставка</h4>
@@ -326,16 +316,11 @@ export function SalaryStats({
               Ставка не указана
             </div>
           )}
-        </motion.div>
+        </div>
 
-        {/* Количество дней */}
+                {/* Количество дней */}
         {Object.keys(days_summary).length > 0 && (
-          <motion.div
-            className="bento-card p-4 sm:p-6"
-            initial={isInitialLoad ? { opacity: 0, x: 20 } : false}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: isInitialLoad ? 0.15 : 0 }}
-          >
+          <div className="bento-card p-4 sm:p-6">
             <div className="flex items-center gap-2 mb-4">
               <Calendar className="w-5 h-5" />
               <h4 className="font-display text-base sm:text-lg">Статистика дней</h4>
@@ -344,59 +329,73 @@ export function SalaryStats({
             <div className="space-y-3">
               {Object.entries(days_summary).map(([status, count]) => {
                 let label = status;
-                let bgColor = "bg-gray-100";
 
                 if (status.toLowerCase().includes("work")) {
                   label = "Рабочие дни";
-                  bgColor = "bg-t2-salad";
                 } else if (status.toLowerCase().includes("vacation")) {
                   label = "Отпуск";
-                  bgColor = "bg-t2-magenta";
                 } else if (status.toLowerCase().includes("sick")) {
                   label = "Больничный";
-                  bgColor = "bg-red-100";
                 } else if (status.toLowerCase().includes("off")) {
                   label = "Выходные";
-                  bgColor = "bg-yellow-100";
                 }
 
                 return (
-                  <div key={status} className={`${bgColor} p-3 rounded-xl flex items-center justify-between`}>
+                  <div key={status} className="p-3 rounded-xl flex items-center justify-between border border-black/10">
                     <span className="text-sm font-body text-black/70">{label}</span>
                     <span className="font-stencil text-lg text-black">{count}</span>
                   </div>
                 );
               })}
             </div>
-          </motion.div>
+          </div>
         )}
       </div>
 
-            {/* Детализация по типам выплат */}
-      <motion.div
-        className="bento-card p-4 sm:p-6"
-        initial={isInitialLoad ? { opacity: 0 } : false}
-        animate={{ opacity: 1 }}
-        transition={{ delay: isInitialLoad ? 0.25 : 0 }}
-      >
+                        {/* Детализация по типам выплат */}
+      <div className="bento-card p-4 sm:p-6">
         <h4 className="font-display text-lg sm:text-xl mb-4">Детализация выплат</h4>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {salaryItems.map((item, index) => {
             if (item.amount === 0) return null;
 
             const Icon = item.icon;
+            // Определяем цвет иконки и подложки на основе типа выплаты
+            let iconBgColor = "bg-black/5";
+            let iconColor = "text-black";
+
+            if (item.label.includes("Рабочие")) {
+              iconBgColor = "bg-t2-salad";
+              iconColor = "text-black";
+            } else if (item.label.includes("Отпуск")) {
+              iconBgColor = "bg-t2-magenta";
+              iconColor = "text-white";
+            } else if (item.label.includes("Больничные")) {
+              iconBgColor = "bg-red-100";
+              iconColor = "text-red-600";
+            } else if (item.label.includes("Сверхурочные")) {
+              iconBgColor = "bg-orange-100";
+              iconColor = "text-orange-600";
+            } else if (item.label.includes("Ночные")) {
+              iconBgColor = "bg-indigo-100";
+              iconColor = "text-indigo-600";
+            } else if (item.label.includes("Выходные")) {
+              iconBgColor = "bg-purple-100";
+              iconColor = "text-purple-600";
+            } else if (item.label.includes("Разбитые")) {
+              iconBgColor = "bg-blue-100";
+              iconColor = "text-blue-600";
+            }
+
             return (
-              <motion.div
+              <div
                 key={item.label}
                 className="p-4 rounded-xl bg-white border border-black/10 flex items-center justify-between hover:shadow-md transition-shadow"
-                initial={isInitialLoad ? { opacity: 0, y: 10 } : false}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: isInitialLoad ? 0.3 + index * 0.05 : 0 }}
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-black/5 flex items-center justify-center">
-                    <Icon className="w-5 h-5 text-black" />
+                  <div className={`w-10 h-10 rounded-lg ${iconBgColor} flex items-center justify-center`}>
+                    <Icon className={`w-5 h-5 ${iconColor}`} />
                   </div>
                   <span className="text-sm font-body text-black/70">
                     {item.label}
@@ -414,17 +413,17 @@ export function SalaryStats({
                     {formatMoney(item.amount)}
                   </motion.span>
                 </AnimatePresence>
-              </motion.div>
+              </div>
             );
           })}
         </div>
 
-        {salaryItems.every((item) => item.amount === 0) && (
+                {salaryItems.every((item) => item.amount === 0) && (
           <div className="text-center py-6 text-gray-400 text-sm font-body">
             За выбранный период нет начислений
           </div>
         )}
-      </motion.div>
+      </div>
     </motion.div>
   );
 }
