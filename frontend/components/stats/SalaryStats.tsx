@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Wallet, Calendar, Clock, TrendingUp, ChevronLeft, ChevronRight, DollarSign } from "lucide-react";
+import { Wallet, Calendar, Clock, TrendingUp, ChevronLeft, ChevronRight, DollarSign, Palmtree, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { api, apiHelpers } from "@/lib/api";
 import { SalaryResponse, HourlyRate } from "@/types";
@@ -173,12 +173,12 @@ export function SalaryStats({
       bgColor: "bg-green-50",
       icon: Clock,
     },
-    {
+        {
       label: "Отпускные",
       amount: breakdown.vacation,
       color: "text-pink-600",
       bgColor: "bg-pink-50",
-      icon: Calendar,
+      icon: Palmtree,
     },
     {
       label: "Больничные",
@@ -201,12 +201,12 @@ export function SalaryStats({
       bgColor: "bg-indigo-50",
       icon: Clock,
     },
-    {
+        {
       label: "Выходные",
       amount: breakdown.weekend_holiday,
       color: "text-purple-600",
       bgColor: "bg-purple-50",
-      icon: Calendar,
+      icon: Sun,
     },
     {
       label: "Разбитые смены",
@@ -361,16 +361,16 @@ export function SalaryStats({
             if (item.amount === 0) return null;
 
             const Icon = item.icon;
-            // Определяем цвет иконки и подложки на основе типа выплаты
-            let iconBgColor = "bg-black/5";
-            let iconColor = "text-black";
+                        // Определяем цвет иконки и подложки на основе типа выплаты (пастельные тона)
+            let iconBgColor = "bg-slate-100";
+            let iconColor = "text-slate-600";
 
             if (item.label.includes("Рабочие")) {
-              iconBgColor = "bg-t2-salad";
-              iconColor = "text-black";
+              iconBgColor = "bg-green-100";
+              iconColor = "text-green-600";
             } else if (item.label.includes("Отпуск")) {
-              iconBgColor = "bg-t2-magenta";
-              iconColor = "text-white";
+              iconBgColor = "bg-pink-100";
+              iconColor = "text-pink-600";
             } else if (item.label.includes("Больничные")) {
               iconBgColor = "bg-red-100";
               iconColor = "text-red-600";
@@ -381,8 +381,8 @@ export function SalaryStats({
               iconBgColor = "bg-indigo-100";
               iconColor = "text-indigo-600";
             } else if (item.label.includes("Выходные")) {
-              iconBgColor = "bg-purple-100";
-              iconColor = "text-purple-600";
+              iconBgColor = "bg-yellow-100";
+              iconColor = "text-yellow-600";
             } else if (item.label.includes("Разбитые")) {
               iconBgColor = "bg-blue-100";
               iconColor = "text-blue-600";
@@ -394,7 +394,7 @@ export function SalaryStats({
                 className="p-4 rounded-xl bg-white border border-black/10 flex items-center justify-between hover:shadow-md transition-shadow"
               >
                 <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-lg ${iconBgColor} flex items-center justify-center`}>
+                                    <div className={`w-10 h-10 rounded-full ${iconBgColor} flex items-center justify-center`}>
                     <Icon className={`w-5 h-5 ${iconColor}`} />
                   </div>
                   <span className="text-sm font-body text-black/70">
