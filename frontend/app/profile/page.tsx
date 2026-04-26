@@ -13,7 +13,6 @@ import { api } from "@/lib/api";
 import { calculateTotalHours, formatHours } from "@/lib/utils";
 import { ScheduleDayPayload, DayStatus, UserRole } from "@/types";
 import { SalaryStats } from "@/components/stats/SalaryStats";
-import { HourlyRateEditor } from "@/components/stats/HourlyRateEditor";
 
 interface Stats {
   totalHours: number;
@@ -239,21 +238,13 @@ export default function ProfilePage() {
             </motion.div>
           )}
 
-          {/* Salary Section */}
+                    {/* Salary Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.35 }}
           >
-            <h3 className="text-h3 font-display mb-3 text-base sm:text-lg lg:text-xl px-1">Зарплата</h3>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-              <div className="lg:col-span-2">
-                <SalaryStats />
-              </div>
-              <div className="lg:col-span-1">
-                <HourlyRateEditor />
-              </div>
-            </div>
+            <SalaryStats />
           </motion.div>
 
           {/* Achievements */}
