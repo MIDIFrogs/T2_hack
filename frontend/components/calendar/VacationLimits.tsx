@@ -91,12 +91,12 @@ export const VacationLimits = forwardRef<VacationLimitsRef, VacationLimitsProps>
     }
 
     return (
-            <motion.div
-        className="bento-card p-3 sm:p-4 lg:p-6"
+                  <motion.div
+        className="bento-card p-2 sm:p-4 lg:p-6"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <div className="grid grid-cols-2 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 gap-2 sm:gap-4">
           {/* Отпускные */}
           <div className="space-y-2">
             <div className="flex items-center gap-1 sm:gap-2">

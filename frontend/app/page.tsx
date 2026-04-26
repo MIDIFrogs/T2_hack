@@ -347,8 +347,8 @@ export default function HomePage() {
               </div>
             </motion.div>
 
-            {/* Calendar */}
-            <div className="bento-card rounded-t-none p-3 sm:p-4 lg:p-6">
+                        {/* Calendar */}
+            <div className="bg-white border border-black p-3 sm:p-4 lg:p-6" style={{ borderRadius: '0 0 32px 32px' }}>
             <CalendarGrid
               month={currentMonth}
               schedule={schedule}
