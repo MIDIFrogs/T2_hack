@@ -12,6 +12,8 @@ import { useAuthStore } from "@/lib/store";
 import { api } from "@/lib/api";
 import { calculateTotalHours, formatHours } from "@/lib/utils";
 import { ScheduleDayPayload, DayStatus, UserRole } from "@/types";
+import { SalaryStats } from "@/components/stats/SalaryStats";
+import { HourlyRateEditor } from "@/components/stats/HourlyRateEditor";
 
 interface Stats {
   totalHours: number;
@@ -237,12 +239,29 @@ export default function ProfilePage() {
             </motion.div>
           )}
 
+          {/* Salary Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35 }}
+          >
+            <h3 className="text-h3 font-display mb-3 text-base sm:text-lg lg:text-xl px-1">Зарплата</h3>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+              <div className="lg:col-span-2">
+                <SalaryStats />
+              </div>
+              <div className="lg:col-span-1">
+                <HourlyRateEditor />
+              </div>
+            </div>
+          </motion.div>
+
           {/* Achievements */}
           <motion.div
             className="bento-card p-3 sm:p-4 lg:p-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
+            transition={{ delay: 0.5 }}
           >
             <h3 className="text-h3 font-display mb-3 sm:mb-4 lg:mb-6 flex items-center gap-2 text-base sm:text-lg lg:text-2xl">
               <Trophy className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-t2-magenta" />
@@ -260,7 +279,7 @@ export default function ProfilePage() {
                   }`}
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.5 + index * 0.05 }}
+                  transition={{ delay: 0.6 + index * 0.05 }}
                   whileHover={achievement.unlocked ? { scale: 1.02 } : {}}
                 >
                   <div className="flex flex-col items-center text-center gap-2 sm:gap-3">

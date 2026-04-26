@@ -146,3 +146,19 @@ class CollectionPeriod(Base):
         nullable=False,
     )
 
+
+class UserHourlyRate(Base):
+    """История почасовых ставок пользователя для расчета зарплаты"""
+    __tablename__ = "user_hourly_rates"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    hourly_rate = Column(Integer, nullable=False)  # почасовая ставка в рублях (копейки не используются)
+    effective_date = Column(Date, nullable=False)  # с какой-date начинает действовать ставка
+
+    created_at = Column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
+
+    user = relationship("User")
+
+    __table_args__ = (UniqueConstraint("user_id", "effective_date", name="uq_hourly_rate_user_date"),)
+

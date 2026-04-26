@@ -5,6 +5,8 @@ import {
   ScheduleTemplate,
   Token,
   User,
+  SalaryResponse,
+  HourlyRate,
 } from "@/types";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -163,6 +165,29 @@ class ApiClient {
     return this.request<void>(`/templates/${templateId}`, {
       method: "DELETE",
     });
+  }
+
+  /**
+   * Salary endpoints
+   */
+  async getMySalary(periodStart: string, periodEnd: string): Promise<SalaryResponse> {
+    return this.request<SalaryResponse>(
+      `/salary/me?period_start=${periodStart}&period_end=${periodEnd}`
+    );
+  }
+
+  async setHourlyRate(hourlyRate: number, effectiveDate: string): Promise<HourlyRate> {
+    return this.request<HourlyRate>("/salary/hourly-rate", {
+      method: "PUT",
+      body: JSON.stringify({
+        hourly_rate: hourlyRate,
+        effective_date: effectiveDate,
+      }),
+    });
+  }
+
+  async getHourlyRateHistory(): Promise<HourlyRate[]> {
+    return this.request<HourlyRate[]>("/salary/hourly-rate/history");
   }
 }
 

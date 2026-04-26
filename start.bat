@@ -29,7 +29,7 @@ echo.
 REM Запускаем бэкенд
 echo [2/4] Запуск бэкенда...
 cd /d "%~dp0backend"
-start "T2 Backend" cmd /k "title T2 Backend && echo 🔧 Backend: http://localhost:8000 && echo. && python start.py"
+start "T2 Backend" cmd /k "title T2 Backend && echo 🔧 Backend: http://localhost:8000 && echo. && python -m uvicorn app:app --reload --host 0.0.0.0 --port 8000"
 if errorlevel 1 (
     echo ❌ Не удалось запустить бэкенд!
     pause

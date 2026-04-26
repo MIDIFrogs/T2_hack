@@ -132,3 +132,54 @@ class ScheduleTemplateOut(BaseModel):
     class Config:
         from_attributes = True
 
+
+# ======================== Зарплата ========================
+
+class HourlyRateCreate(BaseModel):
+    hourly_rate: int = Field(..., ge=0, description="Почасовая ставка в рублях")
+    effective_date: date = Field(..., description="Дата, с которой начинает действовать ставка")
+
+
+class HourlyRateOut(BaseModel):
+    id: int
+    user_id: int
+    hourly_rate: int
+    effective_date: date
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class SalaryBreakdown(BaseModel):
+    """Детализация заработной платы по типам выплат"""
+    work_days: float = Field(default=0, description="Оплата за рабочие дни")
+    vacation: float = Field(default=0, description="Отпускные")
+    sick_leave: float = Field(default=0, description="Больничные")
+    overtime: float = Field(default=0, description="Сверхурочные (x1.5 и x2)")
+    night_hours: float = Field(default=0, description="Ночные часы (доплата 20%)")
+    weekend_holiday: float = Field(default=0, description="Выходные и праздники (x2)")
+    split_shift: float = Field(default=0, description="Разбитые смены")
+    total: float = Field(default=0, description="Итого")
+
+
+class SalaryDetails(BaseModel):
+    """Детальная информация о зарплате за период"""
+    period_start: date
+    period_end: date
+    total_hours: float = Field(default=0, description="Всего отработано часов")
+    breakdown: SalaryBreakdown
+    days_summary: Dict[str, int] = Field(default_factory=dict, description="Количество дней по типам")
+
+
+class SalaryResponse(BaseModel):
+    """Ответ с расчетом зарплаты"""
+    salary: SalaryDetails
+    current_hourly_rate: Optional[int] = Field(default=None, description="Текущая почасовая ставка")
+
+
+class SalaryRequest(BaseModel):
+    """Запрос на расчет зарплаты за период"""
+    period_start: date
+    period_end: date
+

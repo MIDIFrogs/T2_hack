@@ -198,3 +198,47 @@ export const STATUS_LABELS: Record<DayStatus, string> = {
   [DayStatus.SICK]: "Больничный",
   [DayStatus.SPLIT]: "Дробящаяся смена",
 };
+
+/**
+ * Hourly rate
+ */
+export interface HourlyRate {
+  id: number;
+  user_id: number;
+  hourly_rate: number;
+  effective_date: string; // YYYY-MM-DD
+  created_at: string;
+}
+
+/**
+ * Salary breakdown by type
+ */
+export interface SalaryBreakdown {
+  work_days: number;
+  vacation: number;
+  sick_leave: number;
+  overtime: number;
+  night_hours: number;
+  weekend_holiday: number;
+  split_shift: number;
+  total: number;
+}
+
+/**
+ * Salary details for a period
+ */
+export interface SalaryDetails {
+  period_start: string; // YYYY-MM-DD
+  period_end: string; // YYYY-MM-DD
+  total_hours: number;
+  breakdown: SalaryBreakdown;
+  days_summary: Record<string, number>;
+}
+
+/**
+ * Salary response
+ */
+export interface SalaryResponse {
+  salary: SalaryDetails;
+  current_hourly_rate?: number;
+}

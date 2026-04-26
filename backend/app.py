@@ -10,6 +10,7 @@ from routes_periods import router as periods_router
 from routes_admin import router as admin_router
 from routes_export import router as export_router
 from routes_templates import router as templates_router
+from routes_salary import router as salary_router
 from auth import get_current_active_user
 
 
@@ -47,6 +48,7 @@ def create_app() -> FastAPI:
     app.include_router(admin_router)
     app.include_router(export_router)
     app.include_router(templates_router)
+    app.include_router(salary_router)
 
     return app
 
